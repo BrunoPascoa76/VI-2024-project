@@ -1,0 +1,50 @@
+<!-- histogram.html -->
+<div>
+    <h2>Anime Scores Histogram</h2>
+    <canvas id="scoreHistogram" width="400" height="200"></canvas>
+</div>
+
+<script>
+    // Get the score data passed from Jinja into JavaScript
+    const scoreData = score | tojson;
+    
+    // Extract labels (e.g., years) and values (average scores)
+    const labels = Object.keys(scoreData);
+    const scores = Object.values(scoreData);
+
+    // Get the context of the canvas element to draw the chart
+    const ctx = document.getElementById('scoreHistogram').getContext('2d');
+
+    // Create the bar chart using Chart.js
+    new Chart(ctx, {
+        type: 'bar',  // Set the type of chart
+        data: {
+            labels: labels,  // x-axis labels (e.g., years)
+            datasets: [{
+                label: 'Average Anime Scores',
+                data: scores,  // Data for the bars (average scores)
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Average Score'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Year'
+                    }
+                }
+            }
+        }
+    });
+</script>

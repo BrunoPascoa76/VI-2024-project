@@ -1,1 +1,16 @@
 {% extends "dashboard_base.html" %}
+
+{% block content %}
+    <h2>Dashboard 1 - Anime Scores</h2>
+    
+    <div>
+        <p>Here are some statistics about the anime data:</p>
+        <p><strong>Score:</strong> {{ score }}</p>
+        <p><strong>Number of Episodes:</strong> {{ num_episodes }}</p>
+        <p><strong>Genres:</strong> {{ genres }}</p>
+        <p><strong>Demographics:</strong> {{ demographics }}</p>
+    </div>
+
+    <!-- Include the histogram (this part will be rendered dynamically) -->
+    {% include 'histogram.html' with score=score %}
+{% endblock %}
