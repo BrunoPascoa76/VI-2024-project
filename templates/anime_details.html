@@ -1,0 +1,40 @@
+<!-- Button to Open the Modal -->
+<div class="container">
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+  Open Modal
+  </button>
+</div>
+
+<!-- The Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+              <h5 class="modal-title" id="animeTitle">title</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <!-- Modal Body -->
+          <div class="modal-body">
+              <div class="container">
+                <div class="row">
+                    <div class="col-6">
+                        <img id="animeImage" class="img-fluid" src="" alt="image">
+                    </div>
+                    <div class="col-6">
+                        <ul class="list-group">
+                          <li class="list-group-item">Score: <span id="animeScore"></span></li>
+                          <li class="list-group-item">Scored by: <span id="animeScoredBy"></span></li>
+                          <li class="list-group-item">Start Date: <span id="animeStartDate"></span></li>
+                          <li class="list-group-item">End Date: <span id="animeEndDate"></span></li>
+                          <li class="list-group-item">Status: <span id="animeStatus"></span></li>
+                          <li class="list-group-item">Genre: <span id="animeGenres"></span></li>
+                          <li class="list-group-item">Source: <span id="animeDemographics"></span></li>
+                        </ul>
+                    </div>
+                </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
