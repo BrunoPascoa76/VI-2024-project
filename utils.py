@@ -1,25 +1,23 @@
 from ast import literal_eval
-import pandas as pd
+from collections import defaultdict
 
-def load_dataset():
-    return pd.read_csv("static/csv/anime.csv")
 
-def select(df,columns):
-    return df.illoc[columns]
+def get_score(data):
+    return data["score"].dropna().to_numpy().tolist()
 
-def filter(df,query):
-    return df.query(query)
+def get_num_episodes(data):
+    return data["episodes"].astype('Int64').dropna().to_numpy().tolist()
 
-def sort(df,sort_cols):
-    return df.sort_by(by=sort_cols)
+def get_genres(data):
+    return count_occurrences(data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist())
+    
+def get_demographics(data):
+    return count_occurrences(data["demographics"].apply(lambda l:literal_eval(l)).to_numpy().tolist())
 
-def explode(df,col_name):
-    return df.explode(col_name)
+def count_occurrences(col):
+    occurances=defaultdict(int)
+    for lst in col:
+        for entry in lst:
+            occurances[entry]+=1
 
-def unstringify(df,col_name):
-    df[col_name]=df[col_name].apply(literal_eval)
-
-def count(df,col_name):
-    return df[col_name].value_counts()
-
-def set
+    return occurances
