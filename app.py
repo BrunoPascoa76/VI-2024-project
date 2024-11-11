@@ -21,14 +21,17 @@ def dashboard1():
     if "year" in filters:
         data=data.query(f"start_year=={args["year"]}")
     if "season" in filters:
-        data=data.query(f"start_season=={args["season"]}")
+        data=data.query(f"start_season=='{args["season"]}'")
 
     score=get_score(data)
     num_episodes=get_num_episodes(data)
     genres=get_genres(data)
     demographics=get_demographics(data)
 
-    return render_template("dashboard1.html",dashboard_url="/dashboard1",score=score,num_episodes=num_episodes,genres=genres,demographics=demographics)
+    years=data["start_year"].astype('Int64').dropna().unique().tolist()
+    years=sorted(years)
+
+    return render_template("dashboard1.html",dashboard_url="/dashboard1",years=years,score=score,num_episodes=num_episodes,genres=genres,demographics=demographics)
 
 @app.get("/dashboard2")
 def dashboard2():
