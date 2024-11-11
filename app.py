@@ -1,3 +1,4 @@
+from ast import literal_eval
 from flask import Flask, jsonify, redirect, render_template, request
 import pandas as pd
 
@@ -112,3 +113,12 @@ def demographics():
         data=data.query(f"start_season=={args['season']}")
     
     return jsonify(get_demographics(data))
+
+@app.get("/api/anime/<int:anime_id>/details")
+def anime_details(anime_id):
+    data=pd.read_csv(csv_name)
+    result=data[data["anime_id"]==anime_id].to_dict(orient="records")[0]
+    result.pop("Unnamed: 0")
+    result["genres"] = literal_eval(result["genres"])
+    result["demographics"] = literal_eval(result["demographics"])
+    return result

@@ -1,13 +1,13 @@
 <!-- Button to Open the Modal -->
 <div class="container">
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+  <button type="button" class="btn btn-primary" onclick="showModal(5114)">
   Open Modal
   </button>
 </div>
 
 <!-- The Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog",style="max-width: 90%; width: auto;">
       <div class="modal-content">
           <!-- Modal Header -->
           <div class="modal-header">
@@ -22,7 +22,7 @@
                         <img id="animeImage" class="img-fluid" src="" alt="image">
                     </div>
                     <div class="col-6">
-                        <ul class="list-group">
+                        <ul class="list-group" style="white-space: normal; overflow-wrap: break-word;">
                           <li class="list-group-item">Score: <span id="animeScore"></span></li>
                           <li class="list-group-item">Scored by: <span id="animeScoredBy"></span></li>
                           <li class="list-group-item">Start Date: <span id="animeStartDate"></span></li>

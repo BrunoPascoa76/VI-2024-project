@@ -1,1 +1,27 @@
 {% extends "dashboard_base.html" %}
+
+{% block title %}Dashboard 2{% endblock %}
+
+{% block content %}
+    {% include "anime_details.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function showModal(anime_id) {
+        var response=fetch("api/anime/"+anime_id+"/details");
+        response.then((response) => response.json()).then((data) => {
+            $("#animeTitle").text(data.title);
+            $("#animeImage").attr("src", data.main_picture);
+            $("#animeScore").text(data.score);
+            $("#animeScoredBy").text(data.scored_by);
+            $("#animeStartDate").text(data.start_date);
+            $("#animeEndDate").text(data.end_date);
+            $("#animeStatus").text(data.status);
+            $("#animeGenres").text(data.genres);
+            $("#animeDemographics").text(data.demographics);
+            $("#myModal").modal("show");
+        });
+    }
+</script>
+{% endblock %}
