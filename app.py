@@ -12,7 +12,27 @@ def index():
 
 @app.get("/dashboard1")
 def dashboard1():
-    return render_template("dashboard1.html")
+    args=request.args
+    data=pd.read_csv(csv_name)
+
+    filters=args.getlist("filters")
+    
+    #may change these 2 if I have time
+    if "year" in filters:
+        data=data.query(f"start_year=={args["year"]}")
+    if "season" in filters:
+        data=data.query(f"start_season=={args["season"]}")
+
+    score=get_score(data)
+    num_episodes=get_num_episodes(data)
+    genres=get_genres(data)
+    demographics=get_demographics(data)
+
+    return render_template("dashboard1.html",dashboard_url="/dashboard1",score=score,num_episodes=num_episodes,genres=genres,demographics=demographics)
+
+@app.get("/dashboard2")
+def dashboard2():
+    return render_template("dashboard2.html",dashboard_url="/dashboard2")
 
 #return dashboard 1
 @app.get("/api/dashboard1")
