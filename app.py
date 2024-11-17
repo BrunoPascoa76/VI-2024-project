@@ -1,4 +1,5 @@
 from ast import literal_eval
+from collections import OrderedDict, defaultdict
 from flask import Flask, jsonify, redirect, render_template, request
 import pandas as pd
 
@@ -36,8 +37,37 @@ def dashboard1():
 
 @app.get("/dashboard2")
 def dashboard2():
-    return render_template("dashboard2.html",dashboard_url="/dashboard2")
+    args=request.args
+    data=pd.read_csv(csv_name)
+    top_amount=10
 
+    if "year" in args:
+        data=data.query(f"start_year=={args['year']}")
+    if "season" in args:
+        data=data.query(f"start_season=={args['season']}")
+    if "top_amount" in args:
+        top_amount=int(args["top_amount"])
+
+    data=data.dropna()
+    top_anime=data.dropna().nlargest(top_amount, "score").sort_values("score",ascending=False).values.tolist()
+
+    genres_score=defaultdict(int)
+    genres_count=get_genres(data)
+    idx=0
+    for genre in data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist():
+        for g in genre:
+            genres_score[g]+=data["score"].iloc[idx]
+        idx+=1
+
+    genres_score={k:v/genres_count[k] for k,v in genres_score.items()}
+    df=pd.DataFrame(genres_score.items(),columns=["genre","score"])
+
+    top_genres=df.nlargest(top_amount, "score").sort_values("score",ascending=False).to_numpy().tolist()#
+
+    years=data["start_year"].astype('Int64').dropna().unique().tolist()
+    years=sorted(years)
+
+    return render_template("dashboard2.html",top_anime=top_anime,top_genres=top_genres,years=years,dashboard_url="/dashboard2")
 #return dashboard 1
 @app.get("/api/dashboard1")
 def dashboard1_graphs():
@@ -113,6 +143,50 @@ def demographics():
         data=data.query(f"start_season=={args['season']}")
     
     return jsonify(get_demographics(data))
+
+@app.get("/api/top_anime")
+def top_anime():
+    args=request.args
+    data=pd.read_csv(csv_name)
+    top_amount=10
+
+    if "year" in args:
+        data=data.query(f"start_year=={args['year']}")
+    if "season" in args:
+        data=data.query(f"start_season=={args['season']}")
+    if "top_amount" in args:
+        top_amount=int(args["top_amount"])
+
+    data=data.dropna().nlargest(top_amount, "score").sort_values("score",ascending=False)
+    return data.to_dict(orient="records")
+
+@app.get("/api/top_genres")
+def top_genres():
+    args=request.args
+    data=pd.read_csv(csv_name)
+    top_amount=10
+
+    if "year" in args:
+        data=data.query(f"start_year=={args['year']}")
+    if "season" in args:
+        data=data.query(f"start_season=={args['season']}")
+    if "top_amount" in args:
+        top_amount=int(args["top_amount"])
+
+    data=data.dropna()
+
+    genres_score=defaultdict(int)
+    genres_count=get_genres(data)
+    idx=0
+    for genre in data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist():
+        for g in genre:
+            genres_score[g]+=data["score"].iloc[idx]
+        idx+=1
+
+    genres_score={k:v/genres_count[k] for k,v in genres_score.items()}
+    df=pd.DataFrame(genres_score.items(),columns=["genre","score"])
+
+    return df.nlargest(top_amount, "score").sort_values("score",ascending=False).to_dict(orient="records")
 
 @app.get("/api/anime/<int:anime_id>/details")
 def anime_details(anime_id):
