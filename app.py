@@ -15,7 +15,7 @@ def index():
 @app.get("/home")
 def home():
     args=request.args
-    data=pd.read_csv(csv_name)
+    data=pd.read_csv(csv_name).dropna()
 
 
     years=sorted(data["start_year"].astype('Int64').dropna().unique().tolist())
@@ -23,15 +23,21 @@ def home():
     current_filters=dict()
 
     if "year" in args and args["year"]!="":
-        data=data.query(f"start_year=={args['year']}")
+        data=data[data["start_year"]==int(args["year"])]
         current_filters["year"]=int(args["year"])
-
     if "season" in args and args["season"]!="":
-        data=data.query(f"start_season=='{args['season']}'")
+        data=data[data["start_season"]==args["season"]]
         current_filters["season"]=args["season"]
 
+    if "min_score" in args and args["min_score"]!="":
+        data=data[data["score"]>=int(args["min_score"])]
+        current_filters["min_score"]=int(args["min_score"])
+    if "max_score" in args and args["max_score"]!="":
+        data=data[data["score"]<=int(args["max_score"])]
+        current_filters["max_score"]=int(args["max_score"])
 
     
+
 
     genres=[]
     genre_lists=data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist()
