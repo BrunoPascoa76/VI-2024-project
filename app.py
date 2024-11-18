@@ -10,7 +10,44 @@ csv_name="static/csv/anime.csv"
 
 @app.get("/")
 def index():
-    return redirect("/dashboard1")
+    return redirect("/home")
+
+@app.get("/home")
+def home():
+    args=request.args
+    data=pd.read_csv(csv_name)
+
+
+    years=sorted(data["start_year"].astype('Int64').dropna().unique().tolist())
+
+    current_filters=dict()
+
+    if "year" in args and args["year"]!="":
+        data=data.query(f"start_year=={args['year']}")
+        current_filters["year"]=args["year"]
+
+    if "season" in args and args["season"]!="":
+        data=data.query(f"start_season=='{args['season']}'")
+        current_filters["season"]=int(args["season"])
+
+    genres=[]
+    genre_lists=data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist()
+    for genre_list in genre_lists:
+        for genre in genre_list:
+            genres.append(genre)
+
+    demographics=[]
+    demographics_lists=data["demographics"].apply(lambda l:literal_eval(l)).to_numpy().tolist()
+    for demographics_list in demographics_lists:
+        for demographic in demographics_list:
+            demographics.append(demographic)
+
+
+    return render_template(
+        "homepage.html",
+        years=years,genres=list(set(genres)),
+        demographics=list(set(demographics)),
+        filters=current_filters)
 
 @app.get("/dashboard1")
 def dashboard1():
@@ -42,9 +79,9 @@ def dashboard2():
     top_amount=10
 
     if "year" in args:
-        data=data.query(f"start_year=={args['year']}")
+        data=data.query(f"start_year=='{args['year']}'")
     if "season" in args:
-        data=data.query(f"start_season=={args['season']}")
+        data=data.query(f"start_season=='{args['season']}'")
     if "top_amount" in args:
         top_amount=int(args["top_amount"])
 
@@ -62,7 +99,8 @@ def dashboard2():
     genres_score={k:v/genres_count[k] for k,v in genres_score.items()}
     df=pd.DataFrame(genres_score.items(),columns=["genre","score"])
 
-    top_genres=df.nlargest(top_amount, "score").sort_values("score",ascending=False).to_numpy().tolist()#
+    df['score'] = pd.to_numeric(df['score'], errors='coerce')
+    top_genres=df.dropna().nlargest(top_amount, "score").sort_values("score",ascending=False).to_numpy().tolist()#
 
     years=data["start_year"].astype('Int64').dropna().unique().tolist()
     years=sorted(years)
@@ -99,9 +137,9 @@ def score():
     
     #may change these 2 if I have time
     if "year" in args:
-        data=data.query(f"start_year=={args["year"]}")
+        data=data.query(f"start_year=='{args["year"]}'")
     if "season" in args:
-        data=data.query(f"start_season=={args["season"]}")
+        data=data.query(f"start_season=='{args["season"]}'")
     
     return jsonify(get_score(data))
 
@@ -112,9 +150,9 @@ def episodes():
     
     #may change these 2 if I have time
     if "year" in args:
-        data=data.query(f"start_year=={args['year']}")
+        data=data.query(f"start_year=='{args['year']}'")
     if "season" in args:
-        data=data.query(f"start_season=={args['season']}")
+        data=data.query(f"start_season=='{args['season']}'")
     
     return jsonify(get_num_episodes(data))
 
