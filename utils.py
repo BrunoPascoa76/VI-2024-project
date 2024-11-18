@@ -1,12 +1,12 @@
 from ast import literal_eval
-from collections import defaultdict
+from collections import defaultdict,Counter
 
 
 def get_score(data):
     return data["score"].dropna().to_numpy().tolist()
 
 def get_num_episodes(data):
-    return data["episodes"].astype('Int64').dropna().to_numpy().tolist()
+    return Counter(data["episodes"].astype('Int64').dropna().to_numpy().tolist())
 
 def get_genres(data):
     return count_occurrences(data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist())
