@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  flask-app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+    volumes:
+      - .:/app  # Mount current directory to /app inside the container
+    restart: always  # Automatically restart the container if it crashes

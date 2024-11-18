@@ -3,8 +3,17 @@
 {% block title %}Dashboard 1{% endblock %}
 
 {% block content %}
-    
-    
+    <h2>Dashboard 1 - Anime Scores</h2>
 
-    <!-- Include the histogram (this part will be rendered dynamically) -->
+    {% set score_data = score %}
+    {% include 'histogram.html' %}
+
+    {% set num_episodes_data = num_episodes %}
+    {% include 'barchart.html' %}
+
+    <!--{% set demographics_data = demographics %}
+    {% include 'spider_chart.html' %}-->
+
+    {% set genres_data = genres %}
+    {%  include 'animes.html'%}
 {% endblock %}

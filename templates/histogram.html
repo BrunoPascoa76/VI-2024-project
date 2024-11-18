@@ -1,50 +1,123 @@
-<!-- histogram.html -->
 <div>
-    <h2>Anime Scores Histogram</h2>
-    <canvas id="scoreHistogram" width="400" height="200"></canvas>
+    <h3>Average Scores Histogram</h3>
+    <svg id="scoreHistogram" width="500" height="300"></svg>
 </div>
 
+<!-- Tooltip styling -->
+<style>
+    .tooltip {
+        position: absolute;
+        text-align: center;
+        padding: 8px;
+        font: 12px sans-serif;
+        background: lightgray;
+        border: 1px solid #333;
+        border-radius: 4px;
+        pointer-events: none;
+        visibility: hidden;
+    }
+</style>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
 <script>
-    // Get the score data passed from Jinja into JavaScript
-    const scoreData = score | tojson;
+    // Assuming scores data is correctly provided as an array of numbers
+    const scores = {{ score_data | tojson }};
     
-    // Extract labels (e.g., years) and values (average scores)
-    const labels = Object.keys(scoreData);
-    const scores = Object.values(scoreData);
+    // Define score bins and initialize the count array
+    const scoreRanges = d3.range(11); // Bins for scores 0 through 10
+    const scoreCounts = new Array(scoreRanges.length).fill(0);
 
-    // Get the context of the canvas element to draw the chart
-    const ctx = document.getElementById('scoreHistogram').getContext('2d');
-
-    // Create the bar chart using Chart.js
-    new Chart(ctx, {
-        type: 'bar',  // Set the type of chart
-        data: {
-            labels: labels,  // x-axis labels (e.g., years)
-            datasets: [{
-                label: 'Average Anime Scores',
-                data: scores,  // Data for the bars (average scores)
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Average Score'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Year'
-                    }
-                }
-            }
+    // Calculate frequency of each score range
+    scores.forEach(score => {
+        if (score >= 0 && score <= 10) {
+            const index = Math.floor(score);
+            scoreCounts[index]++;
         }
     });
+
+    // Define chart dimensions and margins
+    const margin = { top: 20, right: 30, bottom: 40, left: 40 };
+    const width = 500 - margin.left - margin.right;
+    const height = 300 - margin.top - margin.bottom;
+
+    // Create SVG container
+    const svg = d3.select("#scoreHistogram")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Define scales
+    const xScale = d3.scaleBand()
+        .domain(scoreRanges)
+        .range([0, width])
+        .padding(0.1);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(scoreCounts)])
+        .range([height, 0]);
+
+    // Create tooltip div
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip");
+
+    // Create bars for histogram
+    svg.selectAll(".bar")
+        .data(scoreCounts)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", (d, i) => xScale(i))
+        .attr("y", d => yScale(d))
+        .attr("width", xScale.bandwidth())
+        .attr("height", d => height - yScale(d))
+        .attr("fill", "steelblue")
+        .on("mouseover", (event, d) => {
+            tooltip
+                .style("visibility", "visible")
+                .text(`Frequency: ${d}`);
+        })
+        .on("mousemove", (event) => {
+            tooltip
+                .style("top", (event.pageY - 20) + "px")
+                .style("left", (event.pageX + 10) + "px");
+        })
+        .on("mouseout", () => {
+            tooltip.style("visibility", "hidden");
+        });
+
+    // Add frequency labels on top of each bar
+    svg.selectAll(".label")
+        .data(scoreCounts)
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .attr("x", (d, i) => xScale(i) + xScale.bandwidth() / 2)  // Center label on each bar
+        .attr("y", d => yScale(d) - 5)  // Position label just above the bar
+        .attr("text-anchor", "middle")
+        .text(d => d);
+
+    // Add x-axis
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(xScale).tickFormat(d => d))
+        .append("text")
+        .attr("y", 35)
+        .attr("x", width / 2)
+        .attr("text-anchor", "middle")
+        .attr("fill", "black")
+        .text("Scores");
+
+    // Add y-axis
+    svg.append("g")
+        .call(d3.axisLeft(yScale))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -35)
+        .attr("x", -height / 2)
+        .attr("text-anchor", "middle")
+        .attr("fill", "black")
+        .text("Frequency");
+
 </script>

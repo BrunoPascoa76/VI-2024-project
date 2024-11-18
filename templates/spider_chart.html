@@ -1,0 +1,161 @@
+<div>
+    <h3>Genres</h3>
+    <svg id="chart"></svg>
+</div>
+
+<style>
+    .chart-area {
+        fill-opacity: 0.1;
+    }
+    .axis line,
+    .axis path {
+        stroke: #ccc;
+    }
+    .axis text {
+        font-size: 12px;
+    }
+    .radar-point {
+        fill: steelblue;
+        stroke: #fff;
+        stroke-width: 2px;
+    }
+    .tooltip1 {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        padding: 5px;
+        font-size: 12px;
+        pointer-events: none;
+        display: none;
+    }
+</style>
+
+<div id="tooltip1" class="tooltip1"></div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script>
+    const rawDemographicsData = {{ demographics_data | tojson }};
+    console.log("Raw data:", rawDemographicsData);
+
+    // Convert dictionary to array of objects
+    const demographicsData = Object.entries(rawDemographicsData).map(([label, value]) => ({
+        label,
+        value
+    }));
+    console.log("Formatted data:", demographicsData);
+
+    const width2 = 500, height2 = 500;
+
+    const svg2 = d3.select("#chart")
+        .attr("width", width2)
+        .attr("height", height2);
+
+    const radius = Math.min(width2, height2) / 2 - 50;
+    const center = { x: width2 / 2, y: height2 / 2 };
+    const maxValue = d3.max(demographicsData, d => d.value);
+
+    const angleSlice = (2 * Math.PI) / demographicsData.length;
+
+    const scale = d3.scaleLinear()
+        .domain([0, maxValue])
+        .range([0, radius]);
+
+    const tooltip1 = d3.select("#tooltip1");
+
+    // Draw web (gridlines)
+    const levels = 5;
+    const gridLayer = svg2.append("g")
+        .attr("class", "grid")
+        .attr("transform", `translate(${center.x}, ${center.y})`);
+
+    for (let level = 1; level <= levels; level++) {
+        const r = (radius / levels) * level;
+        gridLayer.append("polygon")
+            .attr(
+                "points",
+                demographicsData
+                    .map((_, i) => {
+                        const angle = angleSlice * i - Math.PI / 2;
+                        const x = Math.cos(angle) * r;
+                        const y = Math.sin(angle) * r;
+                        return `${x},${y}`;
+                    })
+                    .join(" ")
+            )
+            .attr("fill", "none")
+            .attr("stroke", "#ccc");
+    }
+
+    // Draw axes
+    const axes = svg2.append("g")
+        .attr("class", "axes")
+        .attr("transform", `translate(${center.x}, ${center.y})`);
+
+    demographicsData.forEach((d, i) => {
+        const angle = angleSlice * i - Math.PI / 2;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+
+        // Axis line
+        axes.append("line")
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", x)
+            .attr("y2", y)
+            .attr("stroke", "#ccc");
+
+        // Axis label
+        axes.append("text")
+            .attr("x", x * 1.1)
+            .attr("y", y * 1.1)
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .text(d.label);
+    });
+
+    // Draw data
+    const dataLayer = svg2.append("g")
+        .attr("class", "data")
+        .attr("transform", `translate(${center.x}, ${center.y})`);
+
+    const dataPoints = demographicsData.map((d, i) => {
+        const angle = angleSlice * i - Math.PI / 2;
+        const r = scale(d.value);
+        return {
+            label: d.label,
+            value: d.value,
+            x: Math.cos(angle) * r,
+            y: Math.sin(angle) * r,
+        };
+    });
+
+    // Data polygon
+    dataLayer.append("polygon")
+        .attr("points", dataPoints.map(d => `${d.x},${d.y}`).join(" "))
+        .attr("class", "chart-area")
+        .attr("fill", "steelblue")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2);
+
+    // Data points with hover interaction
+    dataLayer.selectAll(".radar-point")
+        .data(dataPoints)
+        .enter()
+        .append("circle")
+        .attr("class", "radar-point")
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", 4)
+        .on("mouseover", (event, d) => {
+            tooltip1
+                .style("left", `${event.pageX + 10}px`)
+                .style("top", `${event.pageY - 20}px`)
+                .style("display", "block")
+                .text(`${d.label}: ${d.value}`);
+        })
+        .on("mouseout", () => {
+            tooltip1.style("display", "none");
+        });
+
+</script>
