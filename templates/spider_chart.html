@@ -1,6 +1,6 @@
 <div>
     <h3>Genres</h3>
-    <svg id="chart"></svg>
+    <svg id="spiderChart"></svg>
 </div>
 
 <style>
@@ -45,9 +45,9 @@
     }));
     console.log("Formatted data:", demographicsData);
 
-    const width2 = 500, height2 = 500;
+    const width2 = 500, height2 = 300;
 
-    const svg2 = d3.select("#chart")
+    const svg2 = d3.select("#spiderChart")
         .attr("width", width2)
         .attr("height", height2);
 

@@ -3,17 +3,34 @@
 {% block title %}Dashboard 1{% endblock %}
 
 {% block content %}
-    <h2>Dashboard 1 - Anime Scores</h2>
 
-    {% set score_data = score %}
-    {% include 'histogram.html' %}
+    <div class="d-flex flex-column">
+        <div class="p-2">
+          <h2>Dashboard 1 - Anime Scores</h2>
+        </div>
+        <div class="p-2 d-flex flex-row">
+            <div class="p-2">
+                {% set score_data = score %}
+                {% include 'histogram.html' %}
+            </div>
+            <div class="p-2">
+                {% set num_episodes_data = num_episodes %}
+                {% include 'barchart.html' %}
+            </div>
+        </div>
+        <div class="p-2 d-flex flex-row">
+            <div class="p-2">
+                {% set demographics_data = demographics %}
+                {% include 'spider_chart.html' %}
+            </div>
+        </div>
+    </div>
+    
 
-    {% set num_episodes_data = num_episodes %}
-    {% include 'barchart.html' %}
+    
 
-    <!--{% set demographics_data = demographics %}
-    {% include 'spider_chart.html' %}-->
+    
 
-    {% set genres_data = genres %}
-    {%  include 'animes.html'%}
+    <!--{% set genres_data = genres %}
+    {%  include 'animes.html'%}-->
 {% endblock %}
