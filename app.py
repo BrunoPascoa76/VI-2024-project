@@ -24,11 +24,14 @@ def home():
 
     if "year" in args and args["year"]!="":
         data=data.query(f"start_year=={args['year']}")
-        current_filters["year"]=args["year"]
+        current_filters["year"]=int(args["year"])
 
     if "season" in args and args["season"]!="":
         data=data.query(f"start_season=='{args['season']}'")
-        current_filters["season"]=int(args["season"])
+        current_filters["season"]=args["season"]
+
+
+    
 
     genres=[]
     genre_lists=data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist()
@@ -42,11 +45,11 @@ def home():
         for demographic in demographics_list:
             demographics.append(demographic)
 
-
     return render_template(
         "homepage.html",
         years=years,genres=list(set(genres)),
         demographics=list(set(demographics)),
+        animes=data.to_dict(orient="records"),
         filters=current_filters)
 
 @app.get("/dashboard1")
@@ -54,21 +57,23 @@ def dashboard1():
     args=request.args
     data=pd.read_csv(csv_name)
 
+    years=data["start_year"].astype('Int64').dropna().unique().tolist()
+    years=sorted(years)
+
     filters=args.getlist("filters")
     
     #may change these 2 if I have time
-    if "year" in filters:
-        data=data.query(f"start_year=={args["year"]}")
-    if "season" in filters:
-        data=data.query(f"start_season=='{args["season"]}'")
+    if "year" in filters and args["year"]!="":
+        data=data[data["start_year"]==int(args["year"])]
+    if "season" in filters and args["season"]!="":
+        data=data[data["start_season"]==args["season"]]
 
     score=get_score(data)
     num_episodes=get_num_episodes(data)
     genres=get_genres(data)
     demographics=get_demographics(data)
 
-    years=data["start_year"].astype('Int64').dropna().unique().tolist()
-    years=sorted(years)
+    
 
     return render_template("dashboard1.html",dashboard_url="/dashboard1",years=years,score=score,num_episodes=num_episodes,genres=genres,demographics=demographics)
 
@@ -78,10 +83,15 @@ def dashboard2():
     data=pd.read_csv(csv_name)
     top_amount=10
 
-    if "year" in args:
-        data=data.query(f"start_year=='{args['year']}'")
-    if "season" in args:
-        data=data.query(f"start_season=='{args['season']}'")
+    years=data["start_year"].astype('Int64').dropna().unique().tolist()
+    years=sorted(years)
+
+    filters=args.getlist("filters")
+
+    if "year" in filters and args["year"]!="":
+        data=data[data["start_year"]==int(args["year"])]
+    if "season" in filters and args["season"]!="":
+        data=data[data["start_season"]==args["season"]]
     if "top_amount" in args:
         top_amount=int(args["top_amount"])
 
@@ -102,8 +112,7 @@ def dashboard2():
     df['score'] = pd.to_numeric(df['score'], errors='coerce')
     top_genres=df.dropna().nlargest(top_amount, "score").sort_values("score",ascending=False).to_numpy().tolist()#
 
-    years=data["start_year"].astype('Int64').dropna().unique().tolist()
-    years=sorted(years)
+    
 
     return render_template("dashboard2.html",top_anime=top_anime,top_genres=top_genres,years=years,dashboard_url="/dashboard2")
 #return dashboard 1
@@ -113,10 +122,10 @@ def dashboard1_graphs():
     data=pd.read_csv(csv_name)
     
     #may change these 2 if I have time
-    if "year" in args:
-        data=data.query(f"start_year=={args["year"]}")
-    if "season" in args:
-        data=data.query(f"start_season=={args["season"]}")
+    if "year" in args and args["year"]!="":
+        data=data[data["start_year"]==int(args["year"])]
+    if "season" in args and args["season"]!="":
+        data=data[data["start_season"]==args["season"]]
 
     score=get_score(data)
     num_episodes=get_num_episodes(data)
