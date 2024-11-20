@@ -1,5 +1,5 @@
 from ast import literal_eval
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 from flask import Flask, jsonify, redirect, render_template, request
 import pandas as pd
 
@@ -17,28 +17,7 @@ def home():
     args=request.args
     data=pd.read_csv(csv_name).dropna()
 
-
     years=sorted(data["start_year"].astype('Int64').dropna().unique().tolist())
-
-    current_filters=dict()
-
-    if "year" in args and args["year"]!="":
-        data=data[data["start_year"]==int(args["year"])]
-        current_filters["year"]=int(args["year"])
-    if "season" in args and args["season"]!="":
-        data=data[data["start_season"]==args["season"]]
-        current_filters["season"]=args["season"]
-
-    if "min_score" in args and args["min_score"]!="":
-        data=data[data["score"]>=int(args["min_score"])]
-        current_filters["min_score"]=int(args["min_score"])
-    if "max_score" in args and args["max_score"]!="":
-        data=data[data["score"]<=int(args["max_score"])]
-        current_filters["max_score"]=int(args["max_score"])
-
-    
-
-
     genres=[]
     genre_lists=data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist()
     for genre_list in genre_lists:
@@ -50,6 +29,32 @@ def home():
     for demographics_list in demographics_lists:
         for demographic in demographics_list:
             demographics.append(demographic)
+
+    current_filters=dict()
+
+    if "search" in args and args["search"]!="":
+        data=data[data["title"].str.contains(args["search"],case=False)]
+        current_filters["search"]=args["search"]
+    if "year" in args and args["year"]!="":
+        data=data[data["start_year"]==int(args["year"])]
+        current_filters["year"]=int(args["year"])
+    if "season" in args and args["season"]!="":
+        data=data[data["start_season"]==args["season"]]
+        current_filters["season"]=args["season"]
+    if "min_score" in args and args["min_score"]!="":
+        data=data[data["score"]>=int(args["min_score"])]
+        current_filters["min_score"]=int(args["min_score"])
+    if "max_score" in args and args["max_score"]!="":
+        data=data[data["score"]<=int(args["max_score"])]
+        current_filters["max_score"]=int(args["max_score"])
+    if "genres" in args:
+        _genres=args.getlist("genres")
+        data=data[data["genres"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_genres).issubset(l))]
+        current_filters["genres"]=_genres
+    if "demographics" in args:
+        _demographics=args.getlist("demographics")
+        data=data[data["demographics"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_demographics).issubset(l))]
+        current_filters["demographics"]=_demographics
 
     return render_template(
         "homepage.html",
