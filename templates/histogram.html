@@ -36,6 +36,11 @@
         }
     });
 
+    const dataWithIndex = scoreCounts.map((count, index) => ({
+        index: index,
+        frequency: count
+    }));
+
     // Define chart dimensions and margins
     const margin = { top: 20, right: 30, bottom: 40, left: 40 };
     const width = 500 - margin.left - margin.right;
@@ -50,7 +55,7 @@
 
     // Define scales
     const xScale = d3.scaleBand()
-        .domain(scoreRanges)
+        .domain(dataWithIndex.map(d => d.index))
         .range([0, width])
         .padding(0.1);
 
@@ -64,19 +69,19 @@
 
     // Create bars for histogram
     svg.selectAll(".bar")
-        .data(scoreCounts)
+        .data(dataWithIndex) // Bind transformed data with index and frequency
         .enter()
         .append("rect")
         .attr("class", "bar")
-        .attr("x", (d, i) => xScale(i))
-        .attr("y", d => yScale(d))
+        .attr("x", d => xScale(d.index)) // Use index for x position
+        .attr("y", d => yScale(d.frequency))
         .attr("width", xScale.bandwidth())
-        .attr("height", d => height - yScale(d))
+        .attr("height", d => height - yScale(d.frequency))
         .attr("fill", "steelblue")
         .on("mouseover", (event, d) => {
             tooltip
                 .style("visibility", "visible")
-                .text(`Frequency: ${d}`);
+                .text(`Frequency: ${d.frequency}`);
         })
         .on("mousemove", (event) => {
             tooltip
@@ -85,7 +90,19 @@
         })
         .on("mouseout", () => {
             tooltip.style("visibility", "hidden");
-        });
+        })
+        .on("click", function(event, d) {
+            let binstart=0;
+            let binend=0;
+            if(d.index ==0){
+                binStart = 0;
+                binEnd = 0.5;
+            }else{
+                binStart = d.index-0.5;
+                binEnd = d.index+0.5;
+            }
+            handleScoreHistogramClick(binStart, binEnd); // Call your function with bin range
+       });
 
     // Add frequency labels on top of each bar
     svg.selectAll(".label")

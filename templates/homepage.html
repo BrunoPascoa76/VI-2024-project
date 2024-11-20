@@ -10,7 +10,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css">
-
+    <style>
+        .dropdown-menu {
+            max-height: 200px; /* Set max height */
+            overflow-y: auto;  /* Enable vertical scrolling */
+            overflow-x:hidden
+        }
+    </style>
 </head>
 
 <body>
@@ -84,7 +90,7 @@
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% for genre in genres %}
                     <li>
-                        <div class="form-check dropdown-item" style="pointer-events: none;">
+                        <div class="form-check dropdown-item ms-3" style="pointer-events: none;">
                             <input class="form-check-input dropdown-checkbox" type="checkbox" name="genres" value="{{genre}}"
                                 id="flexCheckChecked" style="pointer-events:auto" {% if genre in filters.genres %}checked{% endif %}>
                             <label class="form-check-label" for="check_{{genre}}">
@@ -104,7 +110,7 @@
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% for demographic in demographics %}
                     <li>
-                        <div class="form-check dropdown-item" style="pointer-events: none;">
+                        <div class="form-check dropdown-item ms-3" style="pointer-events: none;">
                             <input class="form-check-input dropdown-checkbox" name="demographics" type="checkbox"
                                 value="{{demographic}}" id="flexCheckChecked" style="pointer-events:auto" {% if demographic in filters.demographics %}checked{% endif %}>
                             <label class="form-check-label" for="check_{{demographic}}">

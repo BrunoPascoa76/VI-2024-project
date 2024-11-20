@@ -74,8 +74,9 @@ def home():
 
     return render_template(
         "homepage.html",
-        years=years,genres=list(set(genres)),
-        demographics=list(set(demographics)),
+        years=years,
+        genres=sorted(list(set(genres))),
+        demographics=sorted(list(set(demographics))),
         animes=data.to_dict(orient="records"),
         filters=current_filters)
 
@@ -86,6 +87,17 @@ def dashboard1():
 
     years=data["start_year"].astype('Int64').dropna().unique().tolist()
     years=sorted(years)
+    all_genres=[]
+    genre_lists=data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist()
+    for genre_list in genre_lists:
+        for genre in genre_list:
+            all_genres.append(genre)
+
+    all_demographics=[]
+    demographics_lists=data["demographics"].apply(lambda l:literal_eval(l)).to_numpy().tolist()
+    for demographics_list in demographics_lists:
+        for demographic in demographics_list:
+            all_demographics.append(demographic)
     
     current_filters=dict()
     #may change these 2 if I have time
@@ -115,9 +127,16 @@ def dashboard1():
     genres=get_genres(data)
     demographics=get_demographics(data)
 
-    
-
-    return render_template("dashboard1.html",dashboard_url="/dashboard1",years=years,score=score,num_episodes=num_episodes,genres=genres,demographics=demographics,filters=current_filters)
+    return render_template("dashboard1.html",
+                           dashboard_url="/dashboard1",
+                           years=years,
+                           all_genres=sorted(list(set(all_genres))),
+                           all_demographics=sorted(list(set(all_demographics))),
+                           score=score,
+                           num_episodes=num_episodes,
+                           genres=genres,
+                           demographics=demographics,
+                           filters=current_filters)
 
 @app.get("/dashboard2")
 def dashboard2():
@@ -127,6 +146,17 @@ def dashboard2():
 
     years=data["start_year"].astype('Int64').dropna().unique().tolist()
     years=sorted(years)
+    all_genres=[]
+    genre_lists=data["genres"].apply(lambda l:literal_eval(l)).to_numpy().tolist()
+    for genre_list in genre_lists:
+        for genre in genre_list:
+            all_genres.append(genre)
+
+    all_demographics=[]
+    demographics_lists=data["demographics"].apply(lambda l:literal_eval(l)).to_numpy().tolist()
+    for demographics_list in demographics_lists:
+        for demographic in demographics_list:
+            all_demographics.append(demographic)
 
     filters=args.getlist("filters")
 
@@ -156,7 +186,13 @@ def dashboard2():
 
     
 
-    return render_template("dashboard2.html",top_anime=top_anime,top_genres=top_genres,years=years,dashboard_url="/dashboard2")
+    return render_template("dashboard2.html",
+                           top_anime=top_anime,
+                           top_genres=top_genres,
+                           all_genres=sorted(list(set(all_genres))),
+                           all_demographics=sorted(list(set(all_demographics))),
+                           years=years,
+                           dashboard_url="/dashboard2")
 #return dashboard 1
 @app.get("/api/dashboard1")
 def dashboard1_graphs():
