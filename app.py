@@ -56,6 +56,22 @@ def home():
         data=data[data["demographics"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_demographics).issubset(l))]
         current_filters["demographics"]=_demographics
 
+    if "sort" in args and args["sort"]=="title":
+        current_filters["sort"]="title"
+        if "order" in args and args["order"]=="asc":
+            data=data.sort_values("title",ascending=True)
+            current_filters["order"]="asc"
+        else:
+            data=data.sort_values("title",ascending=False)
+    else:
+        current_filters["sort"]="score"
+        if "order" in args and args["order"]=="asc":
+            data=data.sort_values("score",ascending=True)
+            current_filters["order"]="asc"
+        else:
+            data=data.sort_values("score",ascending=False)
+            current_filters["order"]="desc"
+
     return render_template(
         "homepage.html",
         years=years,genres=list(set(genres)),

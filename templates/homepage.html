@@ -41,7 +41,7 @@
     </nav>
 
 
-    <div class="container mt-2">
+    <div class="row mt-2 me-2 justify-content-center">
         <form action="/home" method="get" class="row row-cols-lg-auto g-3 align-items-center">
             <div class="col">
                 <label for="search" class="sr-only">Search:</label>
@@ -118,7 +118,7 @@
 
             <div class="col">Score:</div>
 
-            <div class="col mx-2">
+            <div class="col ms-2 me-auto">
                 <div id="score-slider"></div>
                 <div class="mt-3 d-flex flex-row justify-content-between">
                     <span>Min: <span id="min-value">0</span></span>
@@ -127,11 +127,21 @@
                     <input type="hidden" name="min_score" id="min-score-input" value="0">
                     <input type="hidden" name="max_score" id="max-score-input" value="100">
             </div>
-
-            <div class="col ms-auto">
-                
+            
+            <div class="col ms-auto"></div> <!--Spacer-->
+            
+            
+            <div class="col"><label for="sort" class="form-check-label">Sort by:</label></div>
+            <div class="col">    
+                <select class="form-select" name="sort">
+                    <option value="score" {% if filters.sort==null or filters.sort == 'score' %}selected{% endif %}>Score</option>
+                    <option value="title" {% if filters.sort!=null and filters.sort == 'title' %}selected{% endif %}>Title</option>
+                </select>
             </div>
-
+            <div class="col">
+                <button type="button" class="btn btn-light" id="sort_order_button"><i {% if filters.order == 'asc' %}class="fa fa-arrow-up-wide-short"{% else %}class="fa fa-arrow-down-wide-short"{% endif %} aria-hidden="true"></i></button>
+                <input type="text" id="sort_order_input" style="display: none" name="order" value="{{filters.order | default('desc')}}">
+            </div>
             <div class="col">
                 <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i>
                     Apply</button>
@@ -139,10 +149,10 @@
         </form>
     </div>
 
-    <table class="table table-hover">
+    <table class="table table-hover ms-2 table-striped">
         <thead>
             <tr>
-                <th scope="col">Id</th>
+                <th scope="col" class="border-end">Id</th>
                 <th scope="col">Title</th>
                 <th scope="col">Score</th>
             </tr>
@@ -150,9 +160,9 @@
         <tbody>
             {% for anime in animes %}
             <tr onclick="showModal({{anime.anime_id}})">
-                <th scope="row">{{anime.anime_id}}</th>
+                <th scope="row" class="border-end">{{anime.anime_id}}</th>
                 <td>{{anime.title}}</td>
-                <td>{{anime.score}}</td>
+                <td>{{anime.score|round(2)}}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -211,6 +221,21 @@
                 $("#myModal").modal("show");
             });
         }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#sort_order_button").click(function () {
+                var sort_order = $("#sort_order_input").val();
+                if (sort_order == 'asc') {
+                    sort_order = 'desc';
+                    $("#sort_order_button").html('<i class="fa fa-arrow-down-wide-short" aria-hidden="true"></i>');
+                } else {
+                    sort_order = 'asc';
+                    $("#sort_order_button").html('<i class="fa fa-arrow-up-wide-short" aria-hidden="true"></i>');
+                }
+                $("#sort_order_input").val(sort_order);
+            });
+        });
     </script>
 </body>
 
