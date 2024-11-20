@@ -86,14 +86,29 @@ def dashboard1():
 
     years=data["start_year"].astype('Int64').dropna().unique().tolist()
     years=sorted(years)
-
-    filters=args.getlist("filters")
     
+    current_filters=dict()
     #may change these 2 if I have time
-    if "year" in filters and args["year"]!="":
+    if "year" in args and args["year"]!="":
         data=data[data["start_year"]==int(args["year"])]
-    if "season" in filters and args["season"]!="":
+        current_filters["year"]=int(args["year"])
+    if "season" in args and args["season"]!="":
         data=data[data["start_season"]==args["season"]]
+        current_filters["season"]=args["season"]
+    if "min_score" in args and args["min_score"]!="":
+        data=data[data["score"]>=int(args["min_score"])]
+        current_filters["min_score"]=int(args["min_score"])
+    if "max_score" in args and args["max_score"]!="":
+        data=data[data["score"]<=int(args["max_score"])]
+        current_filters["max_score"]=int(args["max_score"])
+    if "genres" in args:
+        _genres=args.getlist("genres")
+        data=data[data["genres"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_genres).issubset(l))]
+        current_filters["genres"]=_genres
+    if "demographics" in args:
+        _demographics=args.getlist("demographics")
+        data=data[data["demographics"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_demographics).issubset(l))]
+        current_filters["demographics"]=_demographics
 
     score=get_score(data)
     num_episodes=get_num_episodes(data)
@@ -102,7 +117,7 @@ def dashboard1():
 
     
 
-    return render_template("dashboard1.html",dashboard_url="/dashboard1",years=years,score=score,num_episodes=num_episodes,genres=genres,demographics=demographics)
+    return render_template("dashboard1.html",dashboard_url="/dashboard1",years=years,score=score,num_episodes=num_episodes,genres=genres,demographics=demographics,filters=current_filters)
 
 @app.get("/dashboard2")
 def dashboard2():

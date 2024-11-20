@@ -55,7 +55,7 @@
             </div>
 
             <div class="col">
-                <select name="year" id="yearSelect" class="form-select">
+                <select name="year" id="yearSelect" class="form-select centered-select" style="text-align-last:center;text-align:center">
                     <option value="">None</option>
                     {% for year in years %}
                     <option value="{{year}}" {% if year == filters.year %}selected{% endif %}>{{year}}</option>

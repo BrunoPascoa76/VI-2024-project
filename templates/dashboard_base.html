@@ -1,77 +1,169 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{%block title%}Dashboard1{%endblock%}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">MAL stats</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="home">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link {% if dashboard_url=='/dashboard1' %}active{% endif %}" aria-current="page" href="dashboard1">Dashboard 1 (stats by year)</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link {%if dashboard_url=='/dashboard2' %}active{% endif %}" aria-current="page" href="/dashboard2">Dashboard 2 (top rankings)</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-      <div class="d-flex flex-row">
-        <div class="d-flex flex-column bg-dark text-light" style="height: 100vh; width: 15%;">
-          <form action="{{ dashboard_url }}" method="get">
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input" id="filter_by_year" name="filters" {% if filter_by_year %}checked{% endif %} value="year"
-              onclick="toggleSelectVisibility(this.checked, 'yearSelect')">
-              <label for="filter_by_year" class="form-check-label">Filter by year?</label>
-            </div>
-            <select name="year" id="yearSelect" {% if filter_by_year %}style="display: none;"{%endif%}>
-              {% for year in years %}
-              <option value="{{year}}">{{year}}</option>
-              {% endfor %}
-            </select>
-            <div class="form-check">
-              <input type="checkbox" class="form-check-input" id="filter_by_season" name="filters" {%if filter_by_season %}checked{% endif %} value="season"
-              onclick="toggleSelectVisibility(this.checked, 'seasonSelect')">
-              <label for="filter_by_season" class="form-check-label">Filter by season?</label>
-            </div>
-            <select name="season" id="seasonSelect" {% if filter_by_season %}style="display: none;"{%endif%}>
-              {% for season in ["spring","summer","fall","winter"] %}
-              <option value="{{season}}">{{season}}</option>
-              {% endfor %}
-            </select>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
-        </div>
-        {% block content %} {% endblock %}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{%block title%}Dashboard1{%endblock%}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">MAL stats</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if dashboard_url=='/dashboard1' %}active{% endif %}" aria-current="page"
+              href="dashboard1">Dashboard 1 (stats by year)</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {%if dashboard_url=='/dashboard2' %}active{% endif %}" aria-current="page"
+              href="/dashboard2">Dashboard 2 (top rankings)</a>
+          </li>
+        </ul>
       </div>
+    </div>
+  </nav>
+  <div class="d-flex flex-row">
+    <div class="d-flex flex-column bg-dark text-light" style="height: 100vh; width: 15%;">
+      <form action="{{ dashboard_url }}" method="get" class="mx-2">
+
+        <div class="form-group">
+          <label for="yearSelect" class="form-label">Year:</label>
+          <select name="year" id="yearSelect" class="form-select">
+            <option value="">All</option>
+            {% for year in years %}
+            <option value="{{year}}" {% if year==filters.year %}selected{% endif %}>{{year}}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group mt-3">
+          <label for="seasonSelect" class="form-label">Season:</label>
+          <select name="season" id="seasonSelect" class="form-select">
+            <option value="">All</option>
+            {% for season in ["spring","summer","fall","winter"] %}
+            <option value="{{season}}" {% if season==filters.season %}selected{% endif %}>{{season}}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <hr class="my-3 border-1">
+
+        <div class="form-group mt-3 text-center">
+          <button class="dropdown-toggle btn btn-light" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Genres
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% for genre in genres %}
+            <li>
+              <div class="form-check dropdown-item" style="pointer-events: none;">
+                <input class="form-check-input dropdown-checkbox" type="checkbox" name="genres" value="{{genre}}"
+                  id="flexCheckChecked" style="pointer-events:auto" {% if genre in filters.genres %}checked{% endif %}>
+                <label class="form-check-label" for="check_{{genre}}">
+                  {{genre}}
+                </label>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="form-group mt-3 text-center">
+          <button class="dropdown-toggle btn btn-light" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Demographics
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% for demographic in demographics %}
+            <li>
+              <div class="form-check dropdown-item" style="pointer-events: none;">
+                <input class="form-check-input dropdown-checkbox" name="demographics" type="checkbox"
+                  value="{{demographic}}" id="flexCheckChecked" style="pointer-events:auto" {% if demographic in
+                  filters.demographics %}checked{% endif %}>
+                <label class="form-check-label" for="check_{{demographic}}">
+                  {{demographic}}
+                </label>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <hr class="my-3 border-1">
+
+        <div class="">Score:</div>
+        <div class="mt-1 mx-3">
+          <div id="score-slider"></div>
+          <div class="mt-3 d-flex flex-row justify-content-between">
+            <span>Min: <span id="min-value">0</span></span>
+            <span class="float-end">Max: <span id="max-value">100</span></span>
+          </div>
+          <input type="hidden" name="min_score" id="min-score-input" value="0">
+          <input type="hidden" name="max_score" id="max-score-input" value="100">
+        </div>
+
+        <div class="text-center"><button type="submit" class="btn btn-primary">Apply</button></div>
+      </form>
+    </div>
+    {% block content %} {% endblock %}
+  </div>
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-    <script>
-      function toggleSelectVisibility(is_checked,select_id) {
-          var select=document.getElementById(select_id);  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.js"></script>
+  <script>
+    function toggleSelectVisibility(is_checked, select_id) {
+      var select = document.getElementById(select_id);
 
-          if (is_checked) {
-              select.style.display = 'block'; // Show the select element
-          } else {
-              select.style.display = 'none'; // Hide the select element
-          }
+      if (is_checked) {
+        select.style.display = 'block'; // Show the select element
+      } else {
+        select.style.display = 'none'; // Hide the select element
       }
-      </script>
-      
-      {% block scripts %} {% endblock %}
-  </body>
+    }
+  </script>
+  <script>
+    var slider = document.getElementById('score-slider');
+    var min_value = {{ filters.min_score if filters.min_score is defined else 0 }};
+    var max_value = {{ filters.max_score if filters.max_score is defined else 100 }};
+
+    noUiSlider.create(slider, {
+      start: [min_value, max_value], // Starting values
+      connect: true, // Connect the two handles
+      range: {
+        'min': 0,
+        'max': 10
+      }
+    });
+
+    // Update min and max value displays and hidden inputs
+    slider.noUiSlider.on('update', function (values, handle) {
+      document.getElementById('min-value').innerHTML = Math.round(values[0]);
+      document.getElementById('max-value').innerHTML = Math.round(values[1]);
+
+      // Set hidden inputs to current slider values
+      document.getElementById('min-score-input').value = Math.round(values[0]);
+      document.getElementById('max-score-input').value = Math.round(values[1]);
+    });
+  </script>
+
+  {% block scripts %} {% endblock %}
+</body>
+
 </html>
