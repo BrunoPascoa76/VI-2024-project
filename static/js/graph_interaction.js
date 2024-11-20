@@ -6,6 +6,13 @@ function handleScoreHistogramClick(minScore, maxScore) {
     redirect(current_filters);
 }
 
+function handleSpiderDemographicsClick(demographic){
+    let current_filters=extractFilterValues();
+
+    current_filters["demographics"] = [demographic];
+    redirect(current_filters);
+}
+
 function extractFilterValues() {
     let current_filters={}
 

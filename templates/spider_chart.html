@@ -156,6 +156,9 @@
         })
         .on("mouseout", () => {
             tooltip1.style("display", "none");
-        });
+        })
+        .on("click", (event, d) => {
+            handleSpiderDemographicsClick(d.label);
+        })
 
 </script>
