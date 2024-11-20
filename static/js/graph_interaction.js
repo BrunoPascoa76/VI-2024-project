@@ -1,5 +1,8 @@
 function handleScoreHistogramClick(minScore, maxScore) {
     let current_filters=extractFilterValues();
+
+    current_filters["min_score"] = minScore;
+    current_filters["max_score"] = maxScore;
     redirect(current_filters);
 }
 

@@ -36,17 +36,17 @@ def home():
         data=data[data["title"].str.contains(args["search"],case=False)]
         current_filters["search"]=args["search"]
     if "year" in args and args["year"]!="":
-        data=data[data["start_year"]==int(args["year"])]
-        current_filters["year"]=int(args["year"])
+        data=data[data["start_year"]==float(args["year"])]
+        current_filters["year"]=float(args["year"])
     if "season" in args and args["season"]!="":
         data=data[data["start_season"]==args["season"]]
         current_filters["season"]=args["season"]
     if "min_score" in args and args["min_score"]!="":
-        data=data[data["score"]>=int(args["min_score"])]
-        current_filters["min_score"]=int(args["min_score"])
+        data=data[data["score"]>=float(args["min_score"])]
+        current_filters["min_score"]=float(args["min_score"])
     if "max_score" in args and args["max_score"]!="":
-        data=data[data["score"]<=int(args["max_score"])]
-        current_filters["max_score"]=int(args["max_score"])
+        data=data[data["score"]<=float(args["max_score"])]
+        current_filters["max_score"]=float(args["max_score"])
     if "genres" in args:
         _genres=args.getlist("genres")
         data=data[data["genres"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_genres).issubset(l))]
@@ -102,17 +102,17 @@ def dashboard1():
     current_filters=dict()
     #may change these 2 if I have time
     if "year" in args and args["year"]!="":
-        data=data[data["start_year"]==int(args["year"])]
-        current_filters["year"]=int(args["year"])
+        data=data[data["start_year"]==float(args["year"])]
+        current_filters["year"]=float(args["year"])
     if "season" in args and args["season"]!="":
         data=data[data["start_season"]==args["season"]]
         current_filters["season"]=args["season"]
     if "min_score" in args and args["min_score"]!="":
-        data=data[data["score"]>=int(args["min_score"])]
-        current_filters["min_score"]=int(args["min_score"])
+        data=data[data["score"]>=float(args["min_score"])]
+        current_filters["min_score"]=float(args["min_score"])
     if "max_score" in args and args["max_score"]!="":
-        data=data[data["score"]<=int(args["max_score"])]
-        current_filters["max_score"]=int(args["max_score"])
+        data=data[data["score"]<=float(args["max_score"])]
+        current_filters["max_score"]=float(args["max_score"])
     if "genres" in args:
         _genres=args.getlist("genres")
         data=data[data["genres"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_genres).issubset(l))]
@@ -161,11 +161,11 @@ def dashboard2():
     filters=args.getlist("filters")
 
     if "year" in filters and args["year"]!="":
-        data=data[data["start_year"]==int(args["year"])]
+        data=data[data["start_year"]==float(args["year"])]
     if "season" in filters and args["season"]!="":
         data=data[data["start_season"]==args["season"]]
     if "top_amount" in args:
-        top_amount=int(args["top_amount"])
+        top_amount=float(args["top_amount"])
 
     data=data.dropna()
     top_anime=data.dropna().nlargest(top_amount, "score").sort_values("score",ascending=False).values.tolist()
@@ -201,7 +201,7 @@ def dashboard1_graphs():
     
     #may change these 2 if I have time
     if "year" in args and args["year"]!="":
-        data=data[data["start_year"]==int(args["year"])]
+        data=data[data["start_year"]==float(args["year"])]
     if "season" in args and args["season"]!="":
         data=data[data["start_season"]==args["season"]]
 
@@ -280,7 +280,7 @@ def top_anime():
     if "season" in args:
         data=data.query(f"start_season=={args['season']}")
     if "top_amount" in args:
-        top_amount=int(args["top_amount"])
+        top_amount=float(args["top_amount"])
 
     data=data.dropna().nlargest(top_amount, "score").sort_values("score",ascending=False)
     return data.to_dict(orient="records")
@@ -296,7 +296,7 @@ def top_genres():
     if "season" in args:
         data=data.query(f"start_season=={args['season']}")
     if "top_amount" in args:
-        top_amount=int(args["top_amount"])
+        top_amount=float(args["top_amount"])
 
     data=data.dropna()
 
