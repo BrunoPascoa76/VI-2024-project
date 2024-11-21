@@ -1,1 +1,99 @@
+<div>
+    <h3>Top 10 Animes</h3>
+    <svg id="chart_animes"></svg>
+</div>
 
+<style>
+    .bar {
+        fill: steelblue;
+    }
+    .bar:hover {
+        fill: orange;
+    }
+    .label {
+        font-size: 12px;
+        text-anchor: middle;
+    }
+    .axis-label {
+        font-size: 14px;
+        font-weight: bold;
+    }
+</style>
+
+<svg id="chart"></svg>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script>
+    const top_animes_raw= {{ top_animes_data | tojson }};
+    console.log("top_animes",top_animes_raw);
+
+
+    const top_animes_Data = Object.entries(top_animes_raw).map(([label, value]) => ({
+        id:value[1],
+        title: value[2],
+        score: value[4]
+    }));
+
+    console.log("Formatted data:", top_animes_Data);
+
+    // Chart dimensions
+    const width = 800;
+    const height = 400;
+    const margin = { top: 20, right: 20, bottom: 50, left: 200 };
+
+    // Create SVG canvas
+    const svg = d3.select("#chart_animes")
+        .attr("width", width)
+        .attr("height", height);
+
+    // Set up scales
+    const xScale = d3.scaleLinear()
+        .domain([9, d3.max(top_animes_Data, d => d.score)]) // Assumes scores are above 9
+        .range([margin.left, width - margin.right]);
+
+    const yScale = d3.scaleBand()
+        .domain(top_animes_Data.map(d => d.title))
+        .range([margin.top, height - margin.bottom])
+        .padding(0.1);
+
+    // Draw bars
+    svg.selectAll(".bar")
+        .data(top_animes_Data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", margin.left)
+        .attr("y", d => yScale(d.title))
+        .attr("width", d => xScale(d.score) - margin.left)
+        .attr("height", yScale.bandwidth())
+        .on("click", (event, d) => showModal(d.id)); 
+
+    // Add score labels
+    svg.selectAll(".label")
+        .data(top_animes_Data)
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .attr("x", d => xScale(d.score) + 5)
+        .attr("y", d => yScale(d.title) + yScale.bandwidth() / 2)
+        .attr("dy", "0.35em")
+        .text(d => d.score);
+
+    // Add y-axis (titles)
+    svg.append("g")
+        .attr("transform", `translate(${margin.left}, 0)`)
+        .call(d3.axisLeft(yScale));
+
+    // Add x-axis (scores)
+    svg.append("g")
+        .attr("transform", `translate(0, ${height - margin.bottom})`)
+        .call(d3.axisBottom(xScale).ticks(5))
+        .append("text")
+        .attr("class", "axis-label")
+        .attr("x", width / 2)
+        .attr("y", 40)
+        .text("Score");
+
+    
+</script>
