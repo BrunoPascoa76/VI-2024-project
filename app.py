@@ -144,6 +144,7 @@ def dashboard2():
     data=pd.read_csv(csv_name)
     top_amount=10
 
+    data=data.dropna()
     years=data["start_year"].astype('Int64').dropna().unique().tolist()
     years=sorted(years)
     all_genres=[]
@@ -158,16 +159,32 @@ def dashboard2():
         for demographic in demographics_list:
             all_demographics.append(demographic)
 
-    filters=args.getlist("filters")
+    current_filters=dict()
 
-    if "year" in filters and args["year"]!="":
+    if "year" in args and args["year"]!="":
         data=data[data["start_year"]==float(args["year"])]
-    if "season" in filters and args["season"]!="":
+        current_filters["year"]=float(args["year"])
+    if "season" in args and args["season"]!="":
         data=data[data["start_season"]==args["season"]]
+        current_filters["season"]=args["season"]
     if "top_amount" in args:
         top_amount=float(args["top_amount"])
+        current_filters["top_amount"]=top_amount
+    if "min_score" in args and args["min_score"]!="":
+        data=data[data["score"]>=float(args["min_score"])]
+        current_filters["min_score"]=float(args["min_score"])
+    if "max_score" in args and args["max_score"]!="":
+        data=data[data["score"]<=float(args["max_score"])]
+        current_filters["max_score"]=float(args["max_score"])
+    if "genres" in args:
+        _genres=args.getlist("genres")
+        data=data[data["genres"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_genres).issubset(l))]
+        current_filters["genres"]=_genres
+    if "demographics" in args:
+        _demographics=args.getlist("demographics")
+        data=data[data["demographics"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_demographics).issubset(l))]
+        current_filters["demographics"]=_demographics
 
-    data=data.dropna()
     top_anime=data.dropna().nlargest(top_amount, "score").sort_values("score",ascending=False).values.tolist()
 
     genres_score=defaultdict(int)
@@ -182,8 +199,7 @@ def dashboard2():
     df=pd.DataFrame(genres_score.items(),columns=["genre","score"])
 
     df['score'] = pd.to_numeric(df['score'], errors='coerce')
-    top_genres=df.dropna().nlargest(top_amount, "score").sort_values("score",ascending=False).to_numpy().tolist()#
-
+    top_genres=df.dropna().nlargest(top_amount, "score").sort_values("score",ascending=False).to_numpy().tolist()
     
 
     return render_template("dashboard2.html",
@@ -192,7 +208,7 @@ def dashboard2():
                            all_genres=sorted(list(set(all_genres))),
                            all_demographics=sorted(list(set(all_demographics))),
                            years=years,
-                           filters=filters,
+                           filters=current_filters,
                            dashboard_url="/dashboard2")
 #return dashboard 1
 @app.get("/api/dashboard1")
