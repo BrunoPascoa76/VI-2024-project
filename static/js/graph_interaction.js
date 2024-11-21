@@ -48,10 +48,10 @@ function redirect(current_filters) {
     urlString += `&year=${current_filters["year"]}&season=${current_filters["season"]}`
     
     current_filters["genres"].forEach(genre => {
-        urlString += `&genre=${genre}`
+        urlString += `&genres=${genre}`
     })
     current_filters["demographics"].forEach(demographic => {
-        urlString += `&demographic=${demographic}`
+        urlString += `&demographics=${demographic}`
     })
     window.location.href = urlString
 }
