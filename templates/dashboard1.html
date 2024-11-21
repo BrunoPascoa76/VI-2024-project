@@ -18,19 +18,35 @@
                 {% include 'barchart.html' %}
             </div>
         </div>
-        <div class="p-2 d-flex flex-row">
-            <div class="p-2">
-                {% set demographics_data = demographics %}
-                {% include 'spider_chart.html' %}
-            </div>
+        <div class="p-2 d-flex flex-column">
+            <div class="p-2 mb-3 d-flex justify-content-center" >
+                <div class="btn-group" role="group" aria-label="Action Buttons">
+                  <!-- Button for Quantidade -->
+                  <button type="button" class="btn btn-primary" id="btnQuantidade">Quantidade</button>
+                  
+                  <!-- Button for Scored_By -->
+                  <button type="button" class="btn btn-primary" id="btnScoredBy">Scored By</button>
+                  
+                  <!-- Button for Score -->
+                  <button type="button" class="btn btn-primary" id="btnScore">Score</button>
+                  
+                  <!-- Button for Membros -->
+                  <button type="button" class="btn btn-primary" id="btnMembros">Membros</button>
+                </div>
+              </div>
+              <div class="p-2 d-flex flex-row">  
+                <div class="p-2">
+                    {% set demographics_data = demographics %}
+                    {% include 'spider_chart.html' %}
+                </div>
+                <div class="p-2">
+                    {% set demographics_data = demographics %}
+                    {% include 'barchart_genres.html' %}
+                </div>
+
+              </div>  
         </div>
     </div>
     
-
-    
-
-    
-
-    <!--{% set genres_data = genres %}
-    {%  include 'animes.html'%}-->
+   
 {% endblock %}

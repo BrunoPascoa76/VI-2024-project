@@ -3,7 +3,18 @@
 {% block title %}Dashboard 2{% endblock %}
 
 {% block content %}
-    {% include "anime_details.html" %}
+    {%include 'anime_details.html'%}
+    <div class="p-2 d-flex flex-row" >
+        <div class="p-2" >
+            {% set top_animes_data = top_anime %}
+            {% include 'top_animes.html'%} 
+        </div>
+        <div class="p-2"  >
+            {% set top_genres_data = top_genres %}
+            {% include 'top_genres.html' %}
+        </div>
+    </div>
+    
 {% endblock %}
 
 {% block scripts %}

@@ -1,86 +1,139 @@
 <div>
-    <h3>Nº Episodes</h3>
     <svg id="chart"></svg>
 </div>
 
+<style>
+    .bar {
+        fill: steelblue;
+        transition: fill 0.3s, height 0.3s, y 0.3s;
+    }
+
+    .bar:hover {
+        fill: orange;
+    }
+
+    .label {
+        font-size: 12px;
+        text-anchor: middle;
+        font-family: Arial, sans-serif;
+        fill: #333;
+    }
+
+    .axis-label {
+        font-size: 14px;
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+        stroke: #ddd;
+    }
+
+    .x-axis text {
+        transform: rotate(-45deg);
+        text-anchor: end;
+    }
+</style>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <script>
-    // Assuming scores data is correctly provided as an array of numbers
-    const animes = {{ num_episodes_data | tojson }};
-    console.log(animes)
+    const num_episodes = {{ num_episodes_data | tojson }};
+    console.log(num_episodes);
 
-    const data = Array.from(
-            d3.group(animes, d => d),
-            ([num_episodes, occurrences]) => ({ num_episodes, count: occurrences.length })
-        );
+    // Convert the object into an array of { key, value } pairs and sort by value descending
+    const episodesArray = Object.entries(num_episodes)
+        .map(([key, value]) => ({ episodes: +key, count: +value }))
+        .sort((a, b) => b.count - a.count);
 
-        // Configuração do gráfico
-        const width1 = 500;
-        const height1 = 300;
-        const margin1 = { top: 20, right: 30, bottom: 50, left: 50 };
+    // Extract the top 10 entries
+    const top10Episodes = episodesArray.slice(0, 10);
+    console.log("Top 10 Episodes:", top10Episodes);
 
-        const svg1 = d3.select("#chart")
-            .attr("width", width1)
-            .attr("height", height1);
+    // Chart dimensions
+    const width3 = 800;
+    const height3 = 400;
+    const margin3 = { top: 20, right: 20, bottom: 100, left: 70 };
 
-        
-            const uniqueValues = data.map(d => d.num_episodes).slice(0, 15);    
-        const x = d3.scaleBand()
-            .domain(uniqueValues) // Ajusta o domínio para conter apenas os 15 valores
-            .range([margin1.left, width1 - margin1.right])
-            .padding(0.1);
+    // Create SVG canvas
+    const svg3 = d3.select("#chart")
+        .attr("width", width3)
+        .attr("height", height3);
 
-        const y = d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.count)])
-            .nice()
-            .range([height1 - margin1.bottom, margin1.top]);
+    // Set up scales
+    const xScale3 = d3.scaleBand()
+        .domain(top10Episodes.map(d => d.episodes))
+        .range([margin3.left, width3 - margin3.right])
+        .padding(0.1);
 
-        // Eixos
-        svg1.append("g")
-            .attr("transform", `translate(0,${height1 - margin1.bottom})`)
-            .call(d3.axisBottom(x).tickFormat(d => `${d} ep`))
-            .selectAll("text")
-            .attr("transform", "rotate(-45)")
-            .style("text-anchor", "end")
-            .style("font-size", "12px");
+    const yScale3 = d3.scaleLinear()
+        .domain([0, d3.max(top10Episodes, d => d.count)])
+        .range([height3 - margin3.bottom, margin3.top]);
 
-        svg1.append("g")
-            .attr("transform", `translate(${margin1.left},0)`)
-            .call(d3.axisLeft(y));
+    // Add bars with animations
+    svg3.selectAll(".bar")
+        .data(top10Episodes)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => xScale3(d.episodes))
+        .attr("y", height3 - margin3.bottom) // Start at bottom for animation
+        .attr("width", xScale3.bandwidth())
+        .attr("height", 0) // Start with height 0 for animation
+        .transition()
+        .duration(800)
+        .ease(d3.easeBounceOut)
+        .attr("y", d => yScale3(d.count))
+        .attr("height", d => height3 - margin3.bottom - yScale3(d.count));
 
-        // Barras do gráfico
-        svg1.selectAll(".bar")
-            .data(data)
-            .join("rect")
-            .attr("class", "bar")
-            .attr("x", d => x(d.num_episodes))
-            .attr("y", d => y(d.count))
-            .attr("width", x.bandwidth())
-            .attr("height", d => y(0) - y(d.count))
-            .attr("fill", "steelblue");
+    // Add count labels
+    svg3.selectAll(".label")
+        .data(top10Episodes)
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .attr("x", d => xScale3(d.episodes) + xScale3.bandwidth() / 2)
+        .attr("y", d => yScale3(d.count) - 10)
+        .attr("text-anchor", "middle")
+        .attr("opacity", 0) // Start invisible for animation
+        .text(d => d.count)
+        .transition()
+        .duration(800)
+        .ease(d3.easeLinear)
+        .attr("opacity", 1);
 
-        // Títulos e legendas
-        svg1.append("text")
-            .attr("x", width1 / 2)
-            .attr("y", height1 - 10)
-            .attr("text-anchor", "middle")
-            .text("Número de Episódios");
+    // Add x-axis (episodes)
+    svg3.append("g")
+        .attr("class", "axis x-axis")
+        .attr("transform", `translate(0, ${height3 - margin3.bottom})`)
+        .call(d3.axisBottom(xScale3).tickFormat(d => `Ep. ${d}`))
+        .selectAll("text")
+        .style("font-family", "Arial, sans-serif")
+        .style("font-size", "12px")
+        .attr("transform", "rotate(-45)")
+        .attr("text-anchor", "end");
 
-        svg1.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("x", -height1 / 2)
-            .attr("y", 15)
-            .attr("text-anchor", "middle")
-            .text("Quantidade de Animes");
+    // Add y-axis (count)
+    svg3.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(${margin3.left}, 0)`)
+        .call(d3.axisLeft(yScale3).ticks(5))
+        .append("text")
+        .attr("class", "axis-label")
+        .attr("x", -height3 / 2)
+        .attr("y", -50)
+        .attr("transform", "rotate(-90)")
+        .attr("text-anchor", "middle")
+        .text("Number of Animes");
 
-        svg1.append("text")
-            .attr("x", width1 / 2)
-            .attr("y", margin1.top)
-            .attr("text-anchor", "middle")
-            .style("font-size", "16px")
-            .style("font-weight", "bold")
-            .text("Distribuição de Animes por Número de Episódios");
-</script>    
-    
+    // Add chart title
+    svg3.append("text")
+        .attr("x", width3 / 2)
+        .attr("y", margin3.top - 5)
+        .attr("text-anchor", "middle")
+        .style("font-family", "Arial, sans-serif")
+        .style("font-size", "18px")
+        .style("font-weight", "bold")
+        .text("Top 10 Number of Episodes by Anime Count");
+</script>

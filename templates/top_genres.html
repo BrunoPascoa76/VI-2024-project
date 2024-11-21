@@ -1,0 +1,111 @@
+<div>
+    <h3>Top Genres</h3>
+    <svg id="chart_genres"></svg>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script>
+    const top_genres_raw= {{ top_genres_data | tojson }};
+    console.log("top_animes",top_genres_raw);
+
+    console.log("top_genres_raw:", top_genres_raw);
+
+    // Transform the raw data into an array of objects
+    const data = top_genres_raw.map(([name, value]) => ({ name, value: +value }));
+    console.log("Processed data:", data);
+
+    // Set up SVG dimensions and margins
+    const margin1 = { top: 40, right: 30, bottom: 50, left: 60 },
+          width1 = 800 - margin1.left - margin1.right,
+          height1 = 500 - margin1.top - margin1.bottom;
+
+    // Select the SVG and set its dimensions
+    const svg1 = d3.select("#chart_genres")
+        .attr("width", width1 + margin1.left + margin1.right)
+        .attr("height", height1 + margin1.top + margin1.bottom)
+      .append("g")
+        .attr("transform", `translate(${margin1.left},${margin1.top})`);
+
+    // Create a tooltip div that is hidden by default
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip");
+
+    // Set up the X scale (Band scale for categorical data)
+    const x = d3.scaleBand()
+        .domain(data.map(d => d.name))
+        .range([0, width1])
+        .padding(0.2);
+
+    // Add the X axis to the SVG
+    svg1.append("g")
+        .attr("transform", `translate(0, ${height1})`)
+        .call(d3.axisBottom(x))
+      .selectAll("text")
+        .attr("transform", "translate(0,5)")
+        .style("text-anchor", "middle");
+
+    // Set up the Y scale (Linear scale for numerical data)
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.value) * 1.1]) // Add 10% padding on top
+        .range([height, 0]);
+
+    // Add the Y axis to the SVG
+    svg1.append("g")
+        .call(d3.axisLeft(y));
+
+    // Add Y-axis label
+    svg1.append("text")
+        .attr("text-anchor", "end")
+        .attr("x", -margin.left + 20)
+        .attr("y", -10)
+        .text("Value")
+        .attr("text-anchor", "start")
+        .style("font-size", "14px")
+        .style("fill", "black");
+
+    // Create the bars
+    svg1.selectAll(".bar")
+        .data(data)
+        .enter()
+        .append("rect")
+          .attr("class", "bar")
+          .attr("x", d => x(d.name))
+          .attr("width", x.bandwidth())
+          .attr("y", d => y(0)) // Start at y=0 for animation
+          .attr("height", 0) // Start with height=0 for animation
+        .on("mouseover", function(event, d) {
+            d3.select(this).style("fill", "darkorange");
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", 0.9);
+            tooltip.html(`<strong>${d.name}</strong>: ${d.value}`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function() {
+            d3.select(this).style("fill", "steelblue");
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        })
+        .transition() // Animation
+          .duration(800)
+          .attr("y", d => y(d.value))
+          .attr("height", d => height - y(d.value))
+          .delay((d, i) => i * 100);
+
+    // Add bar labels (optional)
+    svg1.selectAll(".label")
+        .data(data)
+        .enter()
+        .append("text")
+          .attr("class", "label")
+          .attr("x", d => x(d.name) + x.bandwidth() / 2)
+          .attr("y", d => y(d.value) - 5)
+          .attr("text-anchor", "middle")
+          .text(d => d.value.toFixed(2))
+          .style("font-size", "12px")
+          .style("fill", "black");
+
+</script>

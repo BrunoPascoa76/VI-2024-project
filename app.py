@@ -192,6 +192,7 @@ def dashboard2():
                            all_genres=sorted(list(set(all_genres))),
                            all_demographics=sorted(list(set(all_demographics))),
                            years=years,
+                           filters=filters,
                            dashboard_url="/dashboard2")
 #return dashboard 1
 @app.get("/api/dashboard1")

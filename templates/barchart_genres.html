@@ -1,0 +1,75 @@
+<div>
+    <h3>Top Genres</h3>
+    <svg id="barchart_genres"></svg>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script>
+    const barchartdemographics = {{ demographics_data | tojson }};
+    console.log("Raw data:", barchartdemographics);
+
+    // Convert dictionary to array of objects
+    const barchartdemographicsData = Object.entries(rawDemographicsData).map(([label, value]) => ({
+        label,
+        value
+    }));
+    console.log("Formatted data:", barchartdemographicsData);
+
+    const margin4 = { top: 20, right: 30, bottom: 40, left: 50 };
+    const width4= 600 - margin4.left - margin4.right;
+    const height4 = 400 - margin4.top - margin4.bottom;
+
+    // Create an SVG container
+    const svg4 = d3.select("#barchart_genres")
+        .attr("width", width4 + margin4.left + margin4.right)
+        .attr("height", height4 + margin4.top + margin4.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin4.left},${margin4.top})`);
+
+    // Define scales
+    const x = d3.scaleBand()
+        .domain(barchartdemographicsData.map(d => d.label))
+        .range([0, width4])
+        .padding(0.1);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(barchartdemographicsData, d => d.value)])
+        .nice()
+        .range([height4, 0]);
+
+    // Add the X-axis
+    svg4.append("g")
+        .attr("transform", `translate(0,${height4})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
+
+    // Add the Y-axis
+    svg4.append("g")
+        .call(d3.axisLeft(y));
+
+    // Add bars
+    svg4.selectAll(".bar")
+        .data(barchartdemographicsData)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => x(d.label))
+        .attr("y", d => y(d.value))
+        .attr("width", x.bandwidth())
+        .attr("height", d => height4 - y(d.value))
+        .attr("fill", "steelblue");
+
+    // Add labels to bars
+    svg4.selectAll(".label")
+        .data(barchartdemographicsData)
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .attr("x", d => x(d.label) + x.bandwidth() / 2)
+        .attr("y", d => y(d.value) - 5)
+        .attr("text-anchor", "middle")
+        .text(d => d.value);
+</script>
