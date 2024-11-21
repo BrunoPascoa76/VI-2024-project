@@ -64,36 +64,25 @@
         .style("font-size", "14px")
         .style("fill", "black");
 
+ 
+
     // Create the bars
+    // Create the bars with animation
     svg1.selectAll(".bar")
         .data(data)
         .enter()
         .append("rect")
-          .attr("class", "bar")
-          .attr("x", d => x(d.name))
-          .attr("width", x.bandwidth())
-          .attr("y", d => y(0)) // Start at y=0 for animation
-          .attr("height", 0) // Start with height=0 for animation
-        .on("mouseover", function(event, d) {
-            d3.select(this).style("fill", "darkorange");
-            tooltip.transition()
-                .duration(200)
-                .style("opacity", 0.9);
-            tooltip.html(`<strong>${d.name}</strong>: ${d.value}`)
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 28) + "px");
-        })
-        .on("mouseout", function() {
-            d3.select(this).style("fill", "steelblue");
-            tooltip.transition()
-                .duration(500)
-                .style("opacity", 0);
-        })
-        .transition() // Animation
-          .duration(800)
-          .attr("y", d => y(d.value))
-          .attr("height", d => height - y(d.value))
-          .delay((d, i) => i * 100);
+        .attr("class", "bar")
+        .attr("x", d => x(d.name))
+        .attr("width", x.bandwidth())
+        .attr("y", d => y(0))
+        .attr("height", 0)
+        .style("fill", "steelblue")  // Ensure bars are visible
+        .transition()
+        .duration(800)
+        .attr("y", d => y(d.value))
+        .attr("height", d => height1 - y(d.value))
+        .delay((d, i) => i * 100); // Apply delay for animation
 
     // Add bar labels (optional)
     svg1.selectAll(".label")

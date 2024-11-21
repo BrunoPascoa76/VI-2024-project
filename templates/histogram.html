@@ -12,13 +12,33 @@
             text-align: center;
             padding: 8px;
             font: 12px sans-serif;
-            background: lightgray;
-            border: 1px solid #333;
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 4px;
+            color: white;
             pointer-events: none;
             visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
-    </style>
+    
+        .bar {
+            transition: all 0.3s ease-in-out;
+        }
+    
+    
+        .label {
+            font-size: 12px;
+            text-anchor: middle;
+            fill: white;
+            font-weight: bold;
+        }
+    
+        .axis-label {
+            font-size: 14px;
+            font-weight: bold;
+            fill: black;
+        }
+</style>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
@@ -34,7 +54,7 @@
         scores.forEach(score => {
             if (score >= 0 && score <= 10) {
                 const index = Math.floor(score);
-                scoreCounts[index]++;
+                scoreCounts[index]++;   
             }
         });
 

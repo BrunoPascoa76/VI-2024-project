@@ -60,7 +60,12 @@
         .attr("y", d => y(d.value))
         .attr("width", x.bandwidth())
         .attr("height", d => height4 - y(d.value))
-        .attr("fill", "steelblue");
+        .attr("fill", "steelblue")
+        .on("click", function(event, d) {
+            event.stopPropagation(); 
+            console.log("Clicked on bar:", d);  // Debug output
+            handleSpiderDemographicsClick(d.label);  // Trigger function
+        })
 
     // Add labels to bars
     svg4.selectAll(".label")

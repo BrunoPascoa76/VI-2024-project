@@ -191,6 +191,7 @@
         var slider = document.getElementById('score-slider');
         var min_value = {{ filters.min_score if filters.min_score is defined else 0 }};
         var max_value = {{ filters.max_score if filters.max_score is defined else 100 }};
+        var demographic = {{filters.demographic if filters.demographic is defined else null}}
 
         noUiSlider.create(slider, {
             start: [min_value, max_value], // Starting values
@@ -210,6 +211,8 @@
             document.getElementById('min-score-input').value = Math.round(values[0]);
             document.getElementById('max-score-input').value = Math.round(values[1]);
         });
+
+        
     </script>
     <script>
         function showModal(anime_id) {
