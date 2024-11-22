@@ -13,6 +13,13 @@ function handleSpiderDemographicsClick(demographic){
     redirect(current_filters);
 }
 
+function handleMetricButtonsClick(metric){
+    document.getElementById("selected-metric").value = metric
+    let current_filters=extractFilterValues();
+
+    redirect(current_filters,"/dashboard1?");
+}
+
 function extractFilterValues() {
     let current_filters={}
 
@@ -21,6 +28,8 @@ function extractFilterValues() {
     
     current_filters["year"] = document.getElementById("yearSelect").value
     current_filters["season"] = document.getElementById("seasonSelect").value
+
+    current_filters["metric"] = document.getElementById("selected-metric").value
 
     let genres = []
     document.querySelectorAll('input[name="genres"]').forEach(genre => {
@@ -41,11 +50,11 @@ function extractFilterValues() {
     return current_filters
 }
 
-function redirect(current_filters) {
-    let urlString="/home?"
+function redirect(current_filters,urlString="/home?") {
 
     urlString += `min_score=${current_filters["min_score"]}&max_score=${current_filters["max_score"]}`
     urlString += `&year=${current_filters["year"]}&season=${current_filters["season"]}`
+    urlString += `&metric=${current_filters["metric"]}`
     
     current_filters["genres"].forEach(genre => {
         urlString += `&genres=${genre}`

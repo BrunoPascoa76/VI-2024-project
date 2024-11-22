@@ -121,11 +121,17 @@ def dashboard1():
         _demographics=args.getlist("demographics")
         data=data[data["demographics"].apply(lambda l:literal_eval(l)).apply(lambda l: set(_demographics).issubset(l))]
         current_filters["demographics"]=_demographics
+    
+    if "metric" in args and args["metric"]!="":
+        metric=args["metric"]
+        current_filters["metric"]=metric
+    else:
+        metric="quantity"
 
     score=get_score(data)
     num_episodes=get_num_episodes(data)
-    genres=get_genres(data)
-    demographics=get_demographics(data)
+    genres=get_genres(data,metric)
+    demographics=get_demographics(data,metric)
 
     return render_template("dashboard1.html",
                            dashboard_url="/dashboard1",

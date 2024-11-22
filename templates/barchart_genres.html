@@ -77,7 +77,7 @@
         .attr("x", d => x(d.label) + x.bandwidth() / 2)
         .attr("y", d => y(d.value) - 5)
         .attr("text-anchor", "middle")
-        .text(d => d.value);
+        .text(d => Math.round(d.value*100)/100);
 
     // Sorting function with transition
     function sortBars() {
@@ -101,7 +101,7 @@
             .duration(1000)
             .attr("x", d => x(d.label) + x.bandwidth() / 2)  // Move labels with bars
             .attr("y", d => y(d.value) - 5)  // Position labels above the bars
-            .text(d => d.value);  // Update label text to match new value
+            .text(d => Math.round(d.value*100)/100);  // Update label text to match new value
 
         // Re-render the X-axis with updated domain and transition
         svg4.select(".x-axis")  // Select the X-axis group
