@@ -1,6 +1,5 @@
     <div>
-        <h3>Average Scores Histogram</h3>
-        <svg id="scoreHistogram" width="500" height="300"></svg>
+        <svg id="scoreHistogram" width="900" height="400"></svg>
     </div>
 
 
@@ -64,9 +63,9 @@
         }));
 
         // Define chart dimensions and margins
-        const margin = { top: 20, right: 30, bottom: 40, left: 40 };
-        const width = 500 - margin.left - margin.right;
-        const height = 300 - margin.top - margin.bottom;
+        const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+        const width = 800 - margin.left - margin.right;
+        const height = 450 - margin.top - margin.bottom;
 
         // Create SVG container
         const svg = d3.select("#scoreHistogram")
@@ -98,13 +97,9 @@
             .attr("x", d => xScale(d.index)) // Use index for x position
             .attr("y", d => yScale(d.frequency))
             .attr("width", xScale.bandwidth())
-            .attr("height", d => height - yScale(d.frequency))
+            //.attr("height", d => height - yScale(d.frequency))
+            .attr("height", 0)
             .attr("fill", "steelblue")
-            .on("mouseover", (event, d) => {
-                tooltip
-                    .style("visibility", "visible")
-                    .text(`Frequency: ${d.frequency}`);
-            })
             .on("mousemove", (event) => {
                 tooltip
                     .style("top", (event.pageY - 20) + "px")
@@ -124,7 +119,11 @@
                     binEnd = d.index+0.5;
                 }
                 handleScoreHistogramClick(binStart, binEnd); // Call your function with bin range
-        });
+        })
+        .transition() // Add transition for animation
+        .duration(1000) // Duration of the animation in milliseconds
+        .attr("y", d => yScale(d.frequency)) // Transition to the correct y position
+        .attr("height", d => height - yScale(d.frequency)); // Tra
 
         // Add frequency labels on top of each bar
         svg.selectAll(".label")
@@ -146,7 +145,10 @@
             .attr("x", width / 2)
             .attr("text-anchor", "middle")
             .attr("fill", "black")
-            .text("Scores");
+            .text("Scores")
+            .style("font-family", "Arial, sans-serif")
+            .style("font-size", "12px")
+            .style("font-weight", "bold");
 
         // Add y-axis
         svg.append("g")
@@ -157,6 +159,18 @@
             .attr("x", -height / 2)
             .attr("text-anchor", "middle")
             .attr("fill", "black")
-            .text("Frequency");
+            .text("Frequency")
+            .style("font-family", "Arial, sans-serif")
+            .style("font-size", "12px")
+            .style("font-weight", "bold");
+
+        svg.append("text")
+            .attr("x", (width / 2) -110)
+            .attr("y", margin.top -20)
+            .attr("text-anchor", "left")
+            .style("font-family", "Arial, sans-serif")
+            .style("font-size", "18px")
+            .style("font-weight", "bold")
+            .text("Average Scores");
 
     </script>

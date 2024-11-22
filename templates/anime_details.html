@@ -1,33 +1,77 @@
 <!-- The Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog",style="max-width: 90%; width: auto;">
+    <div class="modal-dialog" style="max-width: 90%; width: auto;">
       <div class="modal-content">
           <!-- Modal Header -->
-          <div class="modal-header">
-              <h5 class="modal-title" id="animeTitle">title</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-header" style="background-color: #343a40; color: #fff; border-bottom: 1px solid #ddd;">
+              <h5 class="modal-title" id="animeTitle" style="font-size: 1.5rem; color: white;">Title</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="border: none; background-color: transparent;"></button>
           </div>
           <!-- Modal Body -->
-          <div class="modal-body">
+          <div class="modal-body" style="background-color: #f8f9fa; padding: 20px;">
               <div class="container">
-                <div class="row">
-                    <div class="col-6">
-                        <img id="animeImage" class="img-fluid" src="" alt="image">
-                    </div>
-                    <div class="col-6">
-                        <ul class="list-group" style="white-space: normal; overflow-wrap: break-word;">
-                          <li class="list-group-item">Score: <span id="animeScore"></span></li>
-                          <li class="list-group-item">Scored by: <span id="animeScoredBy"></span></li>
-                          <li class="list-group-item">Start Date: <span id="animeStartDate"></span></li>
-                          <li class="list-group-item">End Date: <span id="animeEndDate"></span></li>
-                          <li class="list-group-item">Status: <span id="animeStatus"></span></li>
-                          <li class="list-group-item">Genre: <span id="animeGenres"></span></li>
-                          <li class="list-group-item">Demographics: <span id="animeDemographics"></span></li>
-                        </ul>
-                    </div>
-                </div>
+                  <div class="row">
+                      <div class="col-6">
+                          <!-- Add border radius and shadow to image -->
+                          <img id="animeImage" class="img-fluid rounded" src="" alt="image" style="max-height: 400px; object-fit: cover; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); transition: transform 0.3s ease-in-out;margin-top: 30px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                      </div>
+                      <div class="col-6">
+                          <ul class="list-group" style="white-space: normal; overflow-wrap: break-word; font-size: 1rem;">
+                            <li class="list-group-item" style="background-color: #f0f0f0; border: 1px solid #ddd; font-weight: bold;">Score: <span id="animeScore"></span></li>
+                            <li class="list-group-item" style="background-color: #f0f0f0; border: 1px solid #ddd;">Scored by: <span id="animeScoredBy"></span></li>
+                            <li class="list-group-item" style="background-color: #f0f0f0; border: 1px solid #ddd;">Start Date: <span id="animeStartDate"></span></li>
+                            <li class="list-group-item" style="background-color: #f0f0f0; border: 1px solid #ddd;">End Date: <span id="animeEndDate"></span></li>
+                            <li class="list-group-item" style="background-color: #f0f0f0; border: 1px solid #ddd;">Status: <span id="animeStatus"></span></li>
+                            <li class="list-group-item" style="background-color: #f0f0f0; border: 1px solid #ddd;">Genre: <span id="animeGenres"></span></li>
+                            <li class="list-group-item" style="background-color: #f0f0f0; border: 1px solid #ddd;">Demographics: <span id="animeDemographics"></span></li>
+                          </ul>
+                      </div>
+                  </div>
               </div>
           </div>
       </div>
+    </div>
   </div>
-</div>
+  
+  <!-- Additional styles -->
+  <style>
+      .modal-dialog {
+          max-width: 50%;
+          width: 300px;
+          margin: 30px auto;
+      }
+  
+      .modal-content {
+          border-radius: 12px; /* Rounded corners */
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+  
+      .modal-header {
+          padding: 20px;
+          background-color: #343a40;
+          color: white;
+      }
+  
+      .modal-body {
+          padding: 20px;
+          background-color: #f8f9fa;
+      }
+  
+      .list-group-item {
+          padding: 15px;
+          margin: 5px 0;
+          border-radius: 8px;
+          border: 1px solid #ddd;
+      }
+  
+      .list-group-item:hover {
+          background-color: #e9ecef;
+      }
+  
+      .modal-footer {
+          background-color: #f1f1f1;
+          padding: 10px;
+          border-top: 1px solid #ddd;
+      }
+  </style>
+  

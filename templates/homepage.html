@@ -16,6 +16,61 @@
             overflow-y: auto;  /* Enable vertical scrolling */
             overflow-x:hidden
         }
+        body {
+            background: linear-gradient(to right, #d4e0df, #696e74);
+            color: #fff;
+        }
+
+        .d-flex {
+            display: flex;
+            flex-wrap: nowrap;
+            width: auto;
+            overflow-x: hidden;  /* Prevent horizontal overflow */
+        }
+        .d-flex .container-fluid {
+            flex-grow: 1; /* Allow the content to take the remaining space */
+        }
+
+        .table {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(141, 131, 131, 0.603);
+            overflow: hidden;
+        }
+        
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .table th {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background-color: #f8f9fa; /* Light gray background for odd rows */
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #e9ecef; /* Slightly darker for even rows */
+        }
+
+        .table-row:hover {
+            background-color: #e2e6ea; /* Hover effect on rows */
+            cursor: pointer;
+        }
+
+        .table td, .table th {
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .table td {
+            font-size: 1rem;
+        }
+
+        .table .table-bordered {
+            border: 1px solid #dee2e6;
+        }
     </style>
 </head>
 
@@ -155,8 +210,8 @@
         </form>
     </div>
 
-    <table class="table table-hover ms-2 table-striped">
-        <thead>
+    <table class="table table-hover table-bordered table-striped ms-2">
+        <thead class="table-dark text-white">
             <tr>
                 <th scope="col" class="border-end">Id</th>
                 <th scope="col">Title</th>
@@ -165,7 +220,7 @@
         </thead>
         <tbody>
             {% for anime in animes %}
-            <tr onclick="showModal({{anime.anime_id}})">
+            <tr onclick="showModal({{anime.anime_id}})" class="table-row">
                 <th scope="row" class="border-end">{{anime.anime_id}}</th>
                 <td>{{anime.title}}</td>
                 <td>{{anime.score|round(2)}}</td>

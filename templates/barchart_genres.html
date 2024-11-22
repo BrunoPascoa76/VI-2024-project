@@ -6,18 +6,18 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <script>
-    const barchartdemographics = {{ demographics_data | tojson }};
-    console.log("Raw data:", barchartdemographics);
+    const rawDemographicsData1 = {{ demographics_data | tojson }};
+    console.log("Raw data:", rawDemographicsData1);
 
     // Convert dictionary to array of objects
-    const barchartdemographicsData = Object.entries(rawDemographicsData).map(([label, value]) => ({
+    let barchartdemographicsData = Object.entries(rawDemographicsData1).map(([label, value]) => ({
         label,
         value
     }));
     console.log("Formatted data:", barchartdemographicsData);
 
     const margin4 = { top: 20, right: 30, bottom: 40, left: 50 };
-    const width4= 600 - margin4.left - margin4.right;
+    const width4 = 600 - margin4.left - margin4.right;
     const height4 = 400 - margin4.top - margin4.bottom;
 
     // Create an SVG container
@@ -28,18 +28,19 @@
         .attr("transform", `translate(${margin4.left},${margin4.top})`);
 
     // Define scales
-    const x = d3.scaleBand()
+    let x = d3.scaleBand()
         .domain(barchartdemographicsData.map(d => d.label))
         .range([0, width4])
         .padding(0.1);
 
-    const y = d3.scaleLinear()
+    let y = d3.scaleLinear()
         .domain([0, d3.max(barchartdemographicsData, d => d.value)])
         .nice()
         .range([height4, 0]);
 
     // Add the X-axis
-    svg4.append("g")
+    const xAxis = svg4.append("g")
+        .attr("class", "x-axis")  // Add class for reference
         .attr("transform", `translate(0,${height4})`)
         .call(d3.axisBottom(x))
         .selectAll("text")
@@ -51,7 +52,7 @@
         .call(d3.axisLeft(y));
 
     // Add bars
-    svg4.selectAll(".bar")
+    const bars = svg4.selectAll(".bar")
         .data(barchartdemographicsData)
         .enter()
         .append("rect")
@@ -61,14 +62,14 @@
         .attr("width", x.bandwidth())
         .attr("height", d => height4 - y(d.value))
         .attr("fill", "steelblue")
-        .on("click", function(event, d) {
-            event.stopPropagation(); 
-            console.log("Clicked on bar:", d);  // Debug output
-            handleSpiderDemographicsClick(d.label);  // Trigger function
-        })
+        .on("click", function (event, d) {
+            event.stopPropagation();
+            console.log("Clicked on bar:", d); // Debug output
+            handleSpiderDemographicsClick(d.label); // Trigger function
+        });
 
     // Add labels to bars
-    svg4.selectAll(".label")
+    const labels = svg4.selectAll(".label")
         .data(barchartdemographicsData)
         .enter()
         .append("text")
@@ -77,4 +78,41 @@
         .attr("y", d => y(d.value) - 5)
         .attr("text-anchor", "middle")
         .text(d => d.value);
+
+    // Sorting function with transition
+    function sortBars() {
+        // Sort the data in descending order
+        barchartdemographicsData.sort((a, b) => b.value - a.value);
+
+        // Update the X scale domain with sorted data
+        x.domain(barchartdemographicsData.map(d => d.label));
+
+        // Transition bars (move them to the new positions)
+        bars.data(barchartdemographicsData)
+            .transition()
+            .duration(1000)
+            .attr("x", d => x(d.label))  // Transition x position to new order
+            .attr("y", d => y(d.value))  // Transition y position
+            .attr("height", d => height4 - y(d.value));  // Transition height
+
+        // Transition bar labels (move labels to new positions)
+        labels.data(barchartdemographicsData)
+            .transition()
+            .duration(1000)
+            .attr("x", d => x(d.label) + x.bandwidth() / 2)  // Move labels with bars
+            .attr("y", d => y(d.value) - 5)  // Position labels above the bars
+            .text(d => d.value);  // Update label text to match new value
+
+        // Re-render the X-axis with updated domain and transition
+        svg4.select(".x-axis")  // Select the X-axis group
+            .transition()  // Apply transition to the axis
+            .duration(1000)
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            .style("text-anchor", "end");
+    }
+
+    // Trigger sorting after 2 seconds (for demonstration)
+    setTimeout(sortBars, 2000);
 </script>

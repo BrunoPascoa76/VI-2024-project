@@ -14,6 +14,17 @@
         overflow-y: auto;  /* Enable vertical scrolling */
         overflow-x:hidden
     }
+
+    .d-flex {
+      display: flex;
+      flex-wrap: nowrap;
+      width: auto;
+      overflow-x: hidden;  /* Prevent horizontal overflow */
+    }
+    .d-flex .container-fluid {
+      flex-grow: 1; /* Allow the content to take the remaining space */
+    }
+
 </style>
 </head>
 
@@ -43,7 +54,7 @@
     </div>
   </nav>
   <div class="d-flex flex-row mb-0">
-    <div class="d-flex flex-column bg-dark text-light mb-0 pb-0" style="height:auto; min-height: 100vh; width: 15%;">
+    <div class="d-flex flex-column bg-dark text-light mb-0 pb-0" style="height: auto; min-height: 100vh ;width: 15%;"> 
       <form action="{{ dashboard_url }}" method="get" class="mx-2">
 
         <div class="form-group">
