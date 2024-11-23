@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css">
     <style>
         .dropdown-menu {
-            max-height: 200px; /* Set max height */
-            overflow-y: auto;  /* Enable vertical scrolling */
+            max-height: 200px; 
+            overflow-y: auto;  
             overflow-x:hidden
         }
         body {
@@ -25,10 +25,10 @@
             display: flex;
             flex-wrap: nowrap;
             width: auto;
-            overflow-x: hidden;  /* Prevent horizontal overflow */
+            overflow-x: hidden;  
         }
         .d-flex .container-fluid {
-            flex-grow: 1; /* Allow the content to take the remaining space */
+            flex-grow: 1; 
         }
 
         .table {
@@ -47,15 +47,15 @@
         }
 
         .table tbody tr:nth-child(odd) {
-            background-color: #f8f9fa; /* Light gray background for odd rows */
+            background-color: #f8f9fa; 
         }
 
         .table tbody tr:nth-child(even) {
-            background-color: #e9ecef; /* Slightly darker for even rows */
+            background-color: #e9ecef; 
         }
 
         .table-row:hover {
-            background-color: #e2e6ea; /* Hover effect on rows */
+            background-color: #e2e6ea; 
             cursor: pointer;
         }
 
@@ -189,7 +189,7 @@
                     <input type="hidden" name="max_score" id="max-score-input" value="100">
             </div>
             
-            <div class="col ms-auto"></div> <!--Spacer-->
+            <div class="col ms-auto"></div> 
             
             
             <div class="col"><label for="sort" class="form-check-label">Sort by:</label></div>
@@ -249,20 +249,18 @@
         var demographic = {{filters.demographic if filters.demographic is defined else null}}
 
         noUiSlider.create(slider, {
-            start: [min_value, max_value], // Starting values
-            connect: true, // Connect the two handles
+            start: [min_value, max_value], 
+            connect: true, 
             range: {
                 'min': 0,
                 'max': 10
             }
         });
 
-        // Update min and max value displays and hidden inputs
         slider.noUiSlider.on('update', function (values, handle) {
             document.getElementById('min-value').innerHTML = Math.round(values[0]);
             document.getElementById('max-value').innerHTML = Math.round(values[1]);
 
-            // Set hidden inputs to current slider values
             document.getElementById('min-score-input').value = Math.round(values[0]);
             document.getElementById('max-score-input').value = Math.round(values[1]);
         });

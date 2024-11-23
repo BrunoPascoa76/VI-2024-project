@@ -1,5 +1,5 @@
     <div>
-        <h3>Top Animes</h3>
+        <h3 style="color:black">Top Animes</h3>
         <button id="toggleButton">Show All</button>
         <svg id="chart_animes"></svg>
     </div>
@@ -33,14 +33,13 @@
         const top_animes_raw = {{ top_animes_data | tojson }};
         console.log("top_animes", top_animes_raw);
 
-        // Format data (keeping only name and score)
         const top_animes_Data = Object.entries(top_animes_raw).map(([id, value]) => ({
             id: value[1],
-            title: value[2],  // Anime title
-            score: value[4]   // Anime score
+            title: value[2],  
+            score: value[4]  
         }));
 
-        let displayLimit = 3; // Start with top 3
+        let displayLimit = 3; 
         const chartWidth = 1000;
         const height = 400;
         const margin = { top: 20, right: 30, bottom: 40, left: 50 };
@@ -64,15 +63,12 @@
             function updateChart(data) {
                 const minScore = d3.min(data, d => d.score);
                 const maxScore = d3.max(data, d => d.score);
-                // Update scales
-                xScale.domain(data.map(d => d.id));  // Using id as x-axis
-                yScale.domain([minScore-0.05, maxScore+0.05]); // Fix Y-axis range from 9 to 10
+                xScale.domain(data.map(d => d.id));  
+                yScale.domain([minScore-0.05, maxScore+0.05]);
 
-                // Bind data to bars
                 const bars = chartGroup.selectAll(".bar")
                     .data(data, d => d.id);
 
-                // Enter new bars
                 bars.enter()
                     .append("rect")
                     .attr("class", "bar")
@@ -81,10 +77,10 @@
                     .attr("width", xScale.bandwidth())
                     .attr("height", d => height - margin.top - margin.bottom - yScale(d.score))
                     .on("click", function(event, d) {
-                        console.log(d.id);  // Verify that the data is correctly passed
-                        showModal(d.id);  // Call the modal function
+                        console.log(d.id);  
+                        showModal(d.id);  
                     })
-                    .merge(bars)  // Merge new bars with existing ones
+                    .merge(bars) 
                     .transition()
                     .duration(500)
                     .attr("x", d => xScale(d.id))
@@ -92,88 +88,74 @@
                     .attr("width", xScale.bandwidth())
                     .attr("height", d => height - margin.top - margin.bottom - yScale(d.score));
 
-                // Exit old bars
                 bars.exit().remove();
 
-                // Bind data to name labels (anime titles)
-                // Bind data to name labels (anime titles)
                 const nameLabels = chartGroup.selectAll(".name-label")
                     .data(data, d => d.id);
 
-                let lastY = null; // Store the previous label's Y position to avoid overlap
+                let lastY = null; 
 
-                // Font size adjustment based on the number of animes
-                const fontSize = displayLimit === 3 ? "12px" : "10px";  // Reduce font size for 10 animes
+                const fontSize = displayLimit === 3 ? "12px" : "10px"; 
 
-                // Enter and update name labels
                 nameLabels.enter()
                     .append("text")
                     .attr("class", "name-label")
                     .attr("x", d => xScale(d.id) + xScale.bandwidth() / 2)
                     .attr("y", d => {
-                        // Initial vertical position
                         let yPos = yScale(d.score) - 5;
                         
-                        // Adjust if label overlaps with previous one
                         if (lastY && Math.abs(lastY - yPos) < 20) {
-                            yPos = lastY + 15; // Shift down if overlap detected
+                            yPos = lastY + 15;
                         }
 
-                        lastY = yPos; // Update the last Y position
+                        lastY = yPos;
                         return yPos;
                     })
                     .style("font-size", fontSize)
                     .style("white-space", "nowrap")
                     .style("text-overflow", "ellipsis")
                     .text(d => d.title)
-                    .merge(nameLabels) // Merge new name labels with existing ones
+                    .merge(nameLabels)
                     .transition()
                     .duration(500)
                     .attr("x", d => xScale(d.id) + xScale.bandwidth() / 2)
                     .attr("y", d => {
-                        // Recalculate the vertical position after transition
                         let yPos = yScale(d.score) - 5;
                         
                         if (lastY && Math.abs(lastY - yPos) < 20) {
-                            yPos = lastY + 15; // Shift down if overlap detected
+                            yPos = lastY + 15; 
                         }
 
-                        lastY = yPos; // Update the last Y position
+                        lastY = yPos;
                         return yPos;
                     })
                     .style("font-size", fontSize);
 
-                // Exit name labels
                 nameLabels.exit().remove();
 
 
-                // Bind data to score labels (inside bars)
                 const scoreLabels = chartGroup.selectAll(".label")
                     .data(data, d => d.id);
 
-                // Enter and update score labels
                 scoreLabels.enter()
                     .append("text")
                     .attr("class", "label")
                     .attr("x", d => xScale(d.id) + xScale.bandwidth() / 2)
-                    .attr("y", d => yScale(d.score) + (height - margin.top - margin.bottom - yScale(d.score)) / 2) // Center vertically inside the bar
-                    .attr("dy", ".35em") // Adjust for better centering vertically
-                    .text(d => d.score)  // Display score inside the bar
-                    .merge(scoreLabels) // Merge new score labels with existing ones
+                    .attr("y", d => yScale(d.score) + (height - margin.top - margin.bottom - yScale(d.score)) / 2) 
+                    .attr("dy", ".35em") 
+                    .text(d => d.score)  
+                    .merge(scoreLabels) 
                     .transition()
                     .duration(500)
                     .attr("x", d => xScale(d.id) + xScale.bandwidth() / 2)
                     .attr("y", d => yScale(d.score) + (height - margin.top - margin.bottom - yScale(d.score)) / 2);
 
-                // Exit score labels
                 scoreLabels.exit().remove();
             }
 
 
-        // Initial render
         updateChart(top_animes_Data.slice(0, displayLimit));
 
-        // Toggle button functionality
         d3.select("#toggleButton").on("click", function () {
             if (displayLimit === 3) {
                 displayLimit = 10;

@@ -2,9 +2,6 @@
         <svg id="scoreHistogram" width="900" height="400"></svg>
     </div>
 
-
-
-    <!-- Tooltip styling -->
     <style>
         .tooltip {
             position: absolute;
@@ -31,6 +28,10 @@
             fill: white;
             font-weight: bold;
         }
+
+        .axis-tick{
+            font-size: 30px;
+        }
     
         .axis-label {
             font-size: 14px;
@@ -42,14 +43,11 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
     <script>
-        // Assuming scores data is correctly provided as an array of numbers
         const scores = {{ score_data | tojson }};
         
-        // Define score bins and initialize the count array
         const scoreRanges = d3.range(11); // Bins for scores 0 through 10
         const scoreCounts = new Array(scoreRanges.length).fill(0);
 
-        // Calculate frequency of each score range
         scores.forEach(score => {
             if (score >= 0 && score <= 10) {
                 const index = Math.floor(score);
@@ -62,19 +60,16 @@
             frequency: count
         }));
 
-        // Define chart dimensions and margins
         const margin = { top: 20, right: 30, bottom: 40, left: 50 };
         const width = 800 - margin.left - margin.right;
         const height = 450 - margin.top - margin.bottom;
 
-        // Create SVG container
         const svg = d3.select("#scoreHistogram")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        // Define scales
         const xScale = d3.scaleBand()
             .domain(dataWithIndex.map(d => d.index))
             .range([0, width])
@@ -84,20 +79,17 @@
             .domain([0, d3.max(scoreCounts)])
             .range([height, 0]);
 
-        // Create tooltip div
         const tooltip = d3.select("body").append("div")
             .attr("class", "tooltip");
 
-        // Create bars for histogram
         svg.selectAll(".bar")
-            .data(dataWithIndex) // Bind transformed data with index and frequency
+            .data(dataWithIndex) 
             .enter()
             .append("rect")
             .attr("class", "bar")
-            .attr("x", d => xScale(d.index)) // Use index for x position
+            .attr("x", d => xScale(d.index)) 
             .attr("y", d => yScale(d.frequency))
             .attr("width", xScale.bandwidth())
-            //.attr("height", d => height - yScale(d.frequency))
             .attr("height", 0)
             .attr("fill", "steelblue")
             .on("mousemove", (event) => {
@@ -118,25 +110,23 @@
                     binStart = d.index-0.5;
                     binEnd = d.index+0.5;
                 }
-                handleScoreHistogramClick(binStart, binEnd); // Call your function with bin range
+                handleScoreHistogramClick(binStart, binEnd); 
         })
-        .transition() // Add transition for animation
-        .duration(1000) // Duration of the animation in milliseconds
-        .attr("y", d => yScale(d.frequency)) // Transition to the correct y position
-        .attr("height", d => height - yScale(d.frequency)); // Tra
+        .transition() 
+        .duration(1000) 
+        .attr("y", d => yScale(d.frequency)) 
+        .attr("height", d => height - yScale(d.frequency));
 
-        // Add frequency labels on top of each bar
         svg.selectAll(".label")
             .data(scoreCounts)
             .enter()
             .append("text")
             .attr("class", "label")
-            .attr("x", (d, i) => xScale(i) + xScale.bandwidth() / 2)  // Center label on each bar
-            .attr("y", d => yScale(d) - 5)  // Position label just above the bar
+            .attr("x", (d, i) => xScale(i) + xScale.bandwidth() / 2)  
+            .attr("y", d => yScale(d) - 5)  
             .attr("text-anchor", "middle")
             .text(d => d);
 
-        // Add x-axis
         svg.append("g")
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(xScale).tickFormat(d => d))
@@ -147,10 +137,9 @@
             .attr("fill", "black")
             .text("Scores")
             .style("font-family", "Arial, sans-serif")
-            .style("font-size", "12px")
+            .style("font-size", "15px")
             .style("font-weight", "bold");
 
-        // Add y-axis
         svg.append("g")
             .call(d3.axisLeft(yScale))
             .append("text")
@@ -161,7 +150,7 @@
             .attr("fill", "black")
             .text("Frequency")
             .style("font-family", "Arial, sans-serif")
-            .style("font-size", "12px")
+            .style("font-size", "15px")
             .style("font-weight", "bold");
 
         svg.append("text")

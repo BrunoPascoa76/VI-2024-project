@@ -42,26 +42,21 @@
     const num_episodes = {{ num_episodes_data | tojson }};
     console.log(num_episodes);
 
-    // Convert the object into an array of { key, value } pairs and sort by value descending
     const episodesArray = Object.entries(num_episodes)
         .map(([key, value]) => ({ episodes: +key, count: +value }))
         .sort((a, b) => b.count - a.count);
 
-    // Extract the top 10 entries
     const top10Episodes = episodesArray.slice(0, 10);
     console.log("Top 10 Episodes:", top10Episodes);
 
-    // Chart dimensions
     const width3 = 800;
     const height3 = 500;
-    const margin3 = { top: 20, right: 20, bottom: 100, left: 70 };
+    const margin3 = { top: 100, right: 20, bottom: 100, left: 70 };
 
-    // Create SVG canvas
     const svg3 = d3.select("#chart")
         .attr("width", width3)
         .attr("height", height3);
 
-    // Set up scales
     const xScale3 = d3.scaleBand()
         .domain(top10Episodes.map(d => d.episodes))
         .range([margin3.left, width3 - margin3.right])
@@ -71,23 +66,21 @@
         .domain([0, d3.max(top10Episodes, d => d.count)])
         .range([height3 - margin3.bottom, margin3.top]);
 
-    // Add bars with animations
     svg3.selectAll(".bar")
         .data(top10Episodes)
         .enter()
         .append("rect")
         .attr("class", "bar")
         .attr("x", d => xScale3(d.episodes))
-        .attr("y", height3 - margin3.bottom) // Start at bottom for animation
+        .attr("y", height3 - margin3.bottom) 
         .attr("width", xScale3.bandwidth())
-        .attr("height", 0) // Start with height 0 for animation
+        .attr("height", 0) 
         .transition()
         .duration(800)
         .ease(d3.easeBounceOut)
         .attr("y", d => yScale3(d.count))
         .attr("height", d => height3 - margin3.bottom - yScale3(d.count));
 
-    // Add count labels
     svg3.selectAll(".label")
         .data(top10Episodes)
         .enter()
@@ -96,25 +89,24 @@
         .attr("x", d => xScale3(d.episodes) + xScale3.bandwidth() / 2)
         .attr("y", d => yScale3(d.count) - 10)
         .attr("text-anchor", "middle")
-        .attr("opacity", 0) // Start invisible for animation
+        .attr("opacity", 0) 
         .text(d => d.count)
+        .style("font-size", "20px")
         .transition()
         .duration(800)
         .ease(d3.easeLinear)
         .attr("opacity", 1);
 
-    // Add x-axis (episodes)
     svg3.append("g")
         .attr("class", "axis x-axis")
         .attr("transform", `translate(0, ${height3 - margin3.bottom})`)
         .call(d3.axisBottom(xScale3).tickFormat(d => `${d} Eps`))
         .selectAll("text")
         .style("font-family", "Arial, sans-serif")
-        .style("font-size", "12px")
+        .style("font-size", "14px")
         .attr("transform", "rotate(-45)")
         .attr("text-anchor", "end");
 
-    // Add y-axis (count)
     svg3.append("g")
         .attr("class", "axis")
         .attr("transform", `translate(${margin3.left}, 0)`)
@@ -125,9 +117,9 @@
         .attr("y", -50)
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "middle")
+        .style("font-size","15px")
         .text("Number of Animes");
 
-    // Add chart title
     svg3.append("text")
         .attr("x", width3 / 2)
         .attr("y", margin3.top - 5)
@@ -135,5 +127,5 @@
         .style("font-family", "Arial, sans-serif")
         .style("font-size", "18px")
         .style("font-weight", "bold")
-        .text("Number of Episodes by Anime");
+        .text("Number of Episodes by Animes");
 </script>

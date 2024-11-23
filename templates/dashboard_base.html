@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css">
   <style>
     .dropdown-menu {
-        max-height: 200px; /* Set max height */
-        overflow-y: auto;  /* Enable vertical scrolling */
+        max-height: 200px; 
+        overflow-y: auto;  
         overflow-x:hidden
     }
 
@@ -19,10 +19,10 @@
       display: flex;
       flex-wrap: nowrap;
       width: auto;
-      overflow-x: hidden;  /* Prevent horizontal overflow */
+      overflow-x: hidden;  
     }
     .d-flex .container-fluid {
-      flex-grow: 1; /* Allow the content to take the remaining space */
+      flex-grow: 1; 
     }
 
 </style>
@@ -150,9 +150,9 @@
       var select = document.getElementById(select_id);
 
       if (is_checked) {
-        select.style.display = 'block'; // Show the select element
+        select.style.display = 'block';
       } else {
-        select.style.display = 'none'; // Hide the select element
+        select.style.display = 'none';
       }
     }
   </script>
@@ -162,20 +162,18 @@
     var max_value = {{ filters.max_score if filters.max_score is defined else 100 }};
 
     noUiSlider.create(slider, {
-      start: [min_value, max_value], // Starting values
-      connect: true, // Connect the two handles
+      start: [min_value, max_value], 
+      connect: true, 
       range: {
         'min': 0,
         'max': 10
       }
     });
 
-    // Update min and max value displays and hidden inputs
     slider.noUiSlider.on('update', function (values, handle) {
       document.getElementById('min-value').innerHTML = Math.round(values[0]);
       document.getElementById('max-value').innerHTML = Math.round(values[1]);
 
-      // Set hidden inputs to current slider values
       document.getElementById('min-score-input').value = Math.round(values[0]);
       document.getElementById('max-score-input').value = Math.round(values[1]);
     });

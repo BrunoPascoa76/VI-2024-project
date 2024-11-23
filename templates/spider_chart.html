@@ -1,5 +1,4 @@
 <div>
-    <h3>Genres</h3>
     <svg id="spiderChart"></svg>
 </div>
 
@@ -24,7 +23,7 @@
         background-color: white;
         border: 1px solid #ccc;
         padding: 5px;
-        font-size: 12px;
+        font-size: 15px;
         pointer-events: none;
         display: none;
     }
@@ -38,7 +37,6 @@
     const rawDemographicsData = {{ demographics_data | tojson }};
     console.log("Raw data:", rawDemographicsData);
 
-    // Convert dictionary to array of objects
     const demographicsData = Object.entries(rawDemographicsData).map(([label, value]) => ({
         label,
         value
@@ -63,7 +61,6 @@
 
     const tooltip1 = d3.select("#tooltip1");
 
-    // Draw web (gridlines)
     const levels = 5;
     const gridLayer = svg2.append("g")
         .attr("class", "grid")
@@ -87,7 +84,6 @@
             .attr("stroke", "#ccc");
     }
 
-    // Draw axes
     const axes = svg2.append("g")
         .attr("class", "axes")
         .attr("transform", `translate(${center.x}, ${center.y})`);
@@ -97,7 +93,6 @@
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
 
-        // Axis line
         axes.append("line")
             .attr("x1", 0)
             .attr("y1", 0)
@@ -105,7 +100,6 @@
             .attr("y2", y)
             .attr("stroke", "#ccc");
 
-        // Axis label
         axes.append("text")
             .attr("x", x * 1.1)
             .attr("y", y * 1.1)
@@ -114,7 +108,6 @@
             .text(d.label);
     });
 
-    // Draw data
     const dataLayer = svg2.append("g")
         .attr("class", "data")
         .attr("transform", `translate(${center.x}, ${center.y})`);
@@ -130,7 +123,6 @@
         };
     });
 
-    // Data polygon
     dataLayer.append("polygon")
         .attr("points", dataPoints.map(d => `${d.x},${d.y}`).join(" "))
         .attr("class", "chart-area")
@@ -138,7 +130,6 @@
         .attr("stroke", "steelblue")
         .attr("stroke-width", 2);
 
-    // Data points with hover interaction
     dataLayer.selectAll(".radar-point")
         .data(dataPoints)
         .enter()
@@ -152,7 +143,8 @@
                 .style("left", `${event.pageX + 10}px`)
                 .style("top", `${event.pageY - 20}px`)
                 .style("display", "block")
-                .text(`${d.label}: ${d.value}`);
+                .text(`${d.label}: ${d.value}`)
+                .style("color","black");
         })
         .on("mouseout", () => {
             tooltip1.style("display", "none");

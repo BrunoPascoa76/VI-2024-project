@@ -28,6 +28,12 @@
         background: linear-gradient(to right, #d4e0df, #696e74);
         color: #fff;
     }
+    .title-container h3 {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        margin: 0 auto; 
+    }
 </style>
 <div class="d-flex flex-column">
     <div class="p-2">
@@ -64,6 +70,9 @@
 
             </div>
             <input type="text" style="display: none" id="selected-metric" value="{{metric | default('quantity')}}">
+        </div>
+        <div class="title-container">
+            <h3 style="color:black">Demographics</h3>
         </div>
         <div class="p-2 d-flex flex-row justify-content-center align-items-center">
             <div class="p-2">
