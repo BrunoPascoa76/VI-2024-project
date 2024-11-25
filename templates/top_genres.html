@@ -55,9 +55,8 @@
         .style("font-size", "14px")
         .style("fill", "black");
 
- 
 
-    svg1.selectAll(".bar")
+        svg1.selectAll(".bar")
         .data(data)
         .enter()
         .append("rect")
@@ -66,12 +65,32 @@
         .attr("width", x.bandwidth())
         .attr("y", d => y(0))
         .attr("height", 0)
-        .style("fill", "steelblue")  
+        .style("fill", "steelblue")
+        .on("mouseover", function (event, d) {
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .style("fill", "darkorange")
+        })
+        .on("mouseout", function () {
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .style("fill", "steelblue")
+        })
+        .on("click", (event, d) => {
+            console.log("hhh")
+            console.log(d.name)
+            handleTopGenresClick(d.name)
+        })
+        .attr("y", d => y(d.value))
+        .attr("height", d => height1 - y(d.value))
         .transition()
         .duration(800)
         .attr("y", d => y(d.value))
         .attr("height", d => height1 - y(d.value))
-        .delay((d, i) => i * 100); 
+        .delay((d, i) => i * 100);
+        
 
     svg1.selectAll(".label")
         .data(data)
